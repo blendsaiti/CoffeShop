@@ -1,0 +1,435 @@
+﻿@{
+    ViewData["Title"] = "Order Confirmed";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #3b1f0e;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --warm-grey: #7a6a5a;
+    }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--foam);
+    }
+
+    /* ── PROGRESS ───────────────────────────────────────── */
+    .checkout-progress {
+        background: white;
+        border-bottom: 1px solid rgba(181,117,42,0.1);
+        padding: 20px 0;
+    }
+
+    .progress-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: rgba(122,106,90,0.4);
+        font-weight: 500;
+    }
+
+        .step.done {
+            color: var(--caramel);
+        }
+
+    .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(122,106,90,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .step.done .step-num {
+        background: var(--caramel);
+        border-color: var(--caramel);
+        color: white;
+    }
+
+    .step-connector {
+        flex: 1;
+        height: 1px;
+        background: rgba(181,117,42,0.15);
+        margin: 0 16px;
+        min-width: 40px;
+    }
+
+        .step-connector.done {
+            background: var(--caramel);
+            opacity: 0.4;
+        }
+
+    /* ── CONFIRMATION PAGE ──────────────────────────────── */
+    .confirmation-page {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 24px;
+    }
+
+    .confirmation-card {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.12);
+        border-radius: 4px;
+        width: 100%;
+        max-width: 560px;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    /* Top colour band */
+    .confirmation-band {
+        background: var(--espresso);
+        padding: 48px 40px 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .confirmation-band::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b5752a' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+    /* Success icon */
+    .success-ring {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        border: 2px solid rgba(181,117,42,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        position: relative;
+        z-index: 1;
+        animation: pulse-ring 2s ease-out infinite;
+    }
+    @@keyframes pulse-ring {
+        0% {
+            box-shadow: 0 0 0 0 rgba(181,117,42,0.3);
+        }
+
+        70% {
+            box-shadow: 0 0 0 18px rgba(181,117,42,0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(181,117,42,0);
+        }
+    }
+
+    .success-ring-inner {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--caramel);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @@keyframes pop-in {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .success-ring-inner i {
+        font-size: 26px;
+        color: white;
+    }
+
+    .confirmation-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--latte);
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .confirmation-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--cream);
+        line-height: 1.05;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+        .confirmation-title em {
+            font-style: italic;
+            color: var(--latte);
+        }
+
+    .confirmation-sub {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        font-weight: 300;
+        font-style: italic;
+        color: rgba(245,237,224,0.55);
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Body */
+    .confirmation-body {
+        padding: 40px;
+    }
+
+    .confirmation-message {
+        font-size: 15px;
+        color: var(--warm-grey);
+        line-height: 1.7;
+        margin-bottom: 36px;
+    }
+
+        .confirmation-message strong {
+            color: var(--espresso);
+        }
+
+    /* Steps */
+    .what-next {
+        background: var(--foam);
+        border: 1px solid rgba(181,117,42,0.1);
+        border-radius: 4px;
+        padding: 24px 28px;
+        margin-bottom: 36px;
+        text-align: left;
+    }
+
+    .what-next-title {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .what-next-title::before {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .next-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .next-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        font-size: 13px;
+        color: var(--warm-grey);
+        line-height: 1.5;
+    }
+
+    .next-step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--espresso);
+        color: var(--latte);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* Actions */
+    .confirmation-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-shop-again {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 16px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+    }
+
+        .btn-shop-again:hover {
+            background: var(--caramel);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(181,117,42,0.3);
+        }
+
+    .btn-track-order {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1.5px solid rgba(181,117,42,0.3);
+        color: var(--caramel);
+        background: transparent;
+        padding: 14px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.25s;
+    }
+
+        .btn-track-order:hover {
+            background: var(--espresso);
+            border-color: var(--espresso);
+            color: var(--cream);
+        }
+
+    @@media (max-width: 480px) {
+        .confirmation-band {
+            padding: 40px 24px 32px;
+        }
+
+        .confirmation-body {
+            padding: 28px 24px;
+        }
+
+        .confirmation-title {
+            font-size: 28px;
+        }
+    }
+</style>
+
+<!-- Progress -->
+<div class="checkout-progress">
+    <div class="progress-steps">
+        <div class="step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size:10px;"></i></div>
+            <span>Cart</span>
+        </div>
+        <div class="step-connector done"></div>
+        <div class="step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size:10px;"></i></div>
+            <span>Checkout</span>
+        </div>
+        <div class="step-connector done"></div>
+        <div class="step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size:10px;"></i></div>
+            <span>Confirmation</span>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation -->
+<div class="confirmation-page">
+    <div class="confirmation-card">
+
+        <div class="confirmation-band">
+            <div class="success-ring">
+                <div class="success-ring-inner">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="confirmation-eyebrow">Order Received</div>
+            <h1 class="confirmation-title">Thank you for<br>your <em>order!</em></h1>
+            <p class="confirmation-sub">We're already preparing your perfect cup.</p>
+        </div>
+
+        <div class="confirmation-body">
+
+            <p class="confirmation-message">
+                Your order has been successfully placed. A confirmation email will be sent to you shortly with your order details and tracking information.
+            </p>
+
+            <div class="what-next">
+                <div class="what-next-title">What happens next</div>
+                <div class="next-steps">
+                    <div class="next-step">
+                        <div class="next-step-num">1</div>
+                        <span>We'll send a confirmation email with your order details.</span>
+                    </div>
+                    <div class="next-step">
+                        <div class="next-step-num">2</div>
+                        <span>Your beans are freshly roasted and packed with care.</span>
+                    </div>
+                    <div class="next-step">
+                        <div class="next-step-num">3</div>
+                        <span>Your order ships within 1–2 business days.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <a asp-controller="Products" asp-action="Shop" class="btn-shop-again">
+                    <i class="fas fa-shopping-bag"></i> Continue Shopping
+                </a>
+                <a asp-controller="UserDashboard" asp-action="OrderHistory" class="btn-track-order">
+                    <i class="fas fa-box"></i> View My Orders
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

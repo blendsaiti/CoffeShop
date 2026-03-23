@@ -1,0 +1,523 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #3b1f0e;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --warm-grey: #7a6a5a;
+    }
+
+    .auth-page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── LEFT PANEL ─────────────────────────────────────────────────── */
+    .auth-visual {
+        background: var(--espresso);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 56px;
+        overflow: hidden;
+    }
+
+    .auth-visual-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.18;
+    }
+
+    .auth-visual::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(160deg, rgba(181,117,42,0.12) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    .auth-logo {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+    }
+
+    .auth-logo-icon {
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(181,117,42,0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--latte);
+        font-size: 18px;
+    }
+
+    .auth-logo-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--cream);
+        letter-spacing: 0.5px;
+    }
+
+    .auth-visual-copy {
+        position: relative;
+        z-index: 2;
+    }
+
+    .auth-visual-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--latte);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .auth-visual-eyebrow::before {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 1px;
+            background: var(--latte);
+        }
+
+    .auth-visual-copy h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(36px, 3.5vw, 52px);
+        font-weight: 900;
+        color: var(--cream);
+        line-height: 1.05;
+        margin-bottom: 18px;
+    }
+
+        .auth-visual-copy h2 em {
+            font-style: italic;
+            color: var(--latte);
+        }
+
+    .auth-visual-copy p {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        font-weight: 300;
+        font-style: italic;
+        color: rgba(245,237,224,0.55);
+        line-height: 1.7;
+        max-width: 320px;
+    }
+
+    .auth-visual-deco {
+        position: absolute;
+        bottom: -80px;
+        right: -80px;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.1);
+        z-index: 1;
+    }
+
+    .auth-visual-deco-2 {
+        bottom: -140px;
+        right: -140px;
+        width: 480px;
+        height: 480px;
+        border-color: rgba(181,117,42,0.06);
+    }
+
+    /* ── RIGHT PANEL ────────────────────────────────────────────────── */
+    .auth-form-panel {
+        background: var(--foam);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 56px 48px;
+    }
+
+    .auth-form-wrap {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .auth-form-header {
+        margin-bottom: 40px;
+    }
+
+    .auth-form-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .auth-form-eyebrow::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .auth-form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px;
+        font-weight: 900;
+        color: var(--espresso);
+        line-height: 1.05;
+        margin-bottom: 8px;
+    }
+
+        .auth-form-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .auth-form-subtitle {
+        font-size: 14px;
+        color: var(--warm-grey);
+    }
+
+        .auth-form-subtitle a {
+            color: var(--caramel);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(181,117,42,0.3);
+            transition: border-color 0.2s;
+        }
+
+            .auth-form-subtitle a:hover {
+                border-color: var(--caramel);
+            }
+
+    /* Error alert */
+    .auth-alert {
+        background: rgba(192,57,43,0.07);
+        border: 1px solid rgba(192,57,43,0.2);
+        border-radius: 2px;
+        padding: 13px 16px;
+        font-size: 13px;
+        color: #c0392b;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+        .auth-alert i {
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+    /* Field */
+    .auth-field {
+        margin-bottom: 20px;
+    }
+
+    .auth-label {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--warm-grey);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .auth-input-wrap {
+        position: relative;
+    }
+
+    .auth-input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(181,117,42,0.45);
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .auth-input {
+        width: 100%;
+        background: white;
+        border: 1px solid rgba(181,117,42,0.2);
+        border-radius: 2px;
+        padding: 14px 16px 14px 44px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: var(--espresso);
+        outline: none;
+        transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+        .auth-input:focus {
+            border-color: var(--caramel);
+            box-shadow: 0 0 0 3px rgba(181,117,42,0.08);
+        }
+
+        .auth-input::placeholder {
+            color: rgba(122,106,90,0.4);
+        }
+
+    .field-error {
+        font-size: 12px;
+        color: #c0392b;
+        margin-top: 6px;
+    }
+
+    /* Remember / forgot row */
+    .auth-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .auth-check-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--warm-grey);
+        cursor: pointer;
+    }
+
+    .auth-check {
+        width: 16px;
+        height: 16px;
+        border: 1px solid rgba(181,117,42,0.3);
+        border-radius: 2px;
+        accent-color: var(--caramel);
+        cursor: pointer;
+    }
+
+    .auth-forgot {
+        font-size: 12px;
+        color: var(--caramel);
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid rgba(181,117,42,0.3);
+        transition: border-color 0.2s;
+    }
+
+        .auth-forgot:hover {
+            border-color: var(--caramel);
+        }
+
+    /* Submit button */
+    .auth-submit {
+        width: 100%;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 16px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .auth-submit:hover {
+            background: var(--caramel);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(181,117,42,0.3);
+        }
+
+    /* Divider */
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 24px 0;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(122,106,90,0.4);
+    }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(181,117,42,0.15);
+        }
+
+    /* External login */
+    .external-btn {
+        width: 100%;
+        background: white;
+        border: 1px solid rgba(181,117,42,0.2);
+        border-radius: 2px;
+        padding: 13px 16px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        color: var(--espresso);
+        cursor: pointer;
+        transition: border-color 0.25s, box-shadow 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        margin-bottom: 10px;
+    }
+
+        .external-btn:hover {
+            border-color: var(--caramel);
+            box-shadow: 0 4px 14px rgba(181,117,42,0.1);
+            color: var(--espresso);
+        }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────────────── */
+    @@media (max-width: 768px) {
+        .auth-page {
+            grid-template-columns: 1fr;
+        }
+
+        .auth-visual {
+            display: none;
+        }
+
+        .auth-form-panel {
+            padding: 48px 24px;
+        }
+    }
+</style>
+
+<div class="auth-page">
+
+    <!-- Visual Panel -->
+    <div class="auth-visual">
+        <div class="auth-visual-bg"></div>
+        <div class="auth-visual-deco"></div>
+        <div class="auth-visual-deco auth-visual-deco-2"></div>
+
+        <a href="/" class="auth-logo">
+            <div class="auth-logo-icon"><i class="fas fa-coffee"></i></div>
+            <span class="auth-logo-text">Coffee Shop</span>
+        </a>
+
+        <div class="auth-visual-copy">
+            <div class="auth-visual-eyebrow">Welcome Back</div>
+            <h2>Good to see<br>you <em>again</em></h2>
+            <p>Sign in to access your orders, wishlist and member-exclusive roasts.</p>
+        </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="auth-form-panel">
+        <div class="auth-form-wrap">
+
+            <div class="auth-form-header">
+                <div class="auth-form-eyebrow">Account Access</div>
+                <h1 class="auth-form-title">Sign <em>In</em></h1>
+                <p class="auth-form-subtitle">
+                    No account yet? <a asp-page="./Register">Create one free</a>
+                </p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="auth-alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>@Model.ErrorMessage</span>
+                </div>
+            }
+
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="auth-alert" style="@(ViewData.ModelState.IsValid ? "display:none" : "")">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="auth-label">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-envelope auth-input-icon"></i>
+                        <input asp-for="Input.Email" class="auth-input" placeholder="you@example.com" autocomplete="username">
+                    </div>
+                    <span asp-validation-for="Input.Email" class="field-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="auth-label">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input asp-for="Input.Password" class="auth-input" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                    <span asp-validation-for="Input.Password" class="field-error"></span>
+                </div>
+
+                <div class="auth-row">
+                    <label class="auth-check-label">
+                        <input asp-for="Input.RememberMe" class="auth-check" type="checkbox">
+                        Remember me
+                    </label>
+                    <a asp-page="./ForgotPassword" class="auth-forgot">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="auth-submit">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+
+                @if (Model.ExternalLogins?.Count > 0)
+                {
+                    <div class="auth-divider">or continue with</div>
+                    @foreach (var provider in Model.ExternalLogins)
+                    {
+                        <button type="submit" class="external-btn" name="provider" value="@provider.Name" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                            <i class="fab fa-@provider.Name.ToLower()"></i> @provider.DisplayName
+                        </button>
+                    }
+                }
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

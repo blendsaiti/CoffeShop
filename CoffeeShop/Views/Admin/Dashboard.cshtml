@@ -1,0 +1,170 @@
+﻿@using CoffeeShop.ViewModels
+@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Overview</div>
+        <h1 class="page-title">Dashboard <em>Overview</em></h1>
+    </div>
+    <span style="font-size:13px; color:var(--muted);">Welcome back, Admin</span>
+</div>
+
+<!-- Stat Cards -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon"><i class="fas fa-box"></i></div>
+        </div>
+        <div class="stat-num">@Model.TotalProducts</div>
+        <div class="stat-label">Total Products</div>
+        <a href="/Admin/Products" class="stat-link">View all <i class="fas fa-arrow-right" style="font-size:9px;"></i></a>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+        </div>
+        <div class="stat-num">@Model.TotalOrders</div>
+        <div class="stat-label">Total Orders</div>
+        <a href="/Admin/Orders" class="stat-link">View all <i class="fas fa-arrow-right" style="font-size:9px;"></i></a>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+        </div>
+        <div class="stat-num">@Model.PendingReviews</div>
+        <div class="stat-label">Pending Reviews</div>
+        <a href="/Admin/Reviews" class="stat-link">Review now <i class="fas fa-arrow-right" style="font-size:9px;"></i></a>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+        </div>
+        <div class="stat-num" style="font-size:26px;">$@Model.TotalRevenue.ToString("0.00")</div>
+        <div class="stat-label">Total Revenue</div>
+        <a href="/Admin/SalesReport" class="stat-link">View report <i class="fas fa-arrow-right" style="font-size:9px;"></i></a>
+    </div>
+</div>
+
+<!-- Recent Orders + Low Stock -->
+<div class="grid-2" style="margin-bottom:24px;">
+
+    <!-- Recent Orders -->
+    <div class="panel" style="grid-column: span 1;">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-receipt"></i></div>
+                <span class="panel-title">Recent Orders</span>
+            </div>
+            <a href="/Admin/Orders" class="action-btn action-btn-ghost">View All</a>
+        </div>
+        <div class="panel-body-flush">
+            @if (Model.RecentOrders?.Any() == true)
+            {
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders.Take(5))
+                        {
+                            <tr>
+                                <td><strong style="color:var(--caramel);">#@order.OrderID</strong><br><span style="font-size:11px;color:var(--muted);">@order.OrderPlaced.ToString("MMM dd, HH:mm")</span></td>
+                                <td>@order.FirstName @order.LastName</td>
+                                <td><strong>$@order.OrderTotal.ToString("0.00")</strong></td>
+                                <td>
+                                    @{
+                                        var cls = order.OrderStatus?.ToLower() switch
+                                        {
+                                                            "completed" => "completed",
+                                                            "pending" => "pending",
+                                                            "processing" => "processing",
+                                                            "shipped" => "shipped",
+                                                            "delivered" => "delivered",
+                                                            _ => "cancelled"
+                                        };
+                                    }
+                                    <span class="status-badge @cls">@order.OrderStatus</span>
+                                </td>
+                                <td><a href="/Admin/OrderDetails/@order.OrderID" class="action-btn action-btn-primary">View</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state"><i class="fas fa-inbox"></i><p>No orders yet</p></div>
+            }
+        </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <span class="panel-title">Low Stock Alert</span>
+            </div>
+        </div>
+        <div class="panel-body-flush" style="max-height:340px; overflow-y:auto;">
+            @if (Model.LowStockProducts?.Any() == true)
+            {
+                @foreach (var p in Model.LowStockProducts)
+                {
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(181,117,42,0.06);">
+                        <div>
+                            <div style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">@p.Name</div>
+                            <div style="font-size:11px; color:var(--muted);">Stock: <span style="color:#c0392b; font-weight:600;">@p.StockQuantity</span> remaining</div>
+                        </div>
+                        <a href="/Products/Edit/@p.ProductID" class="action-btn action-btn-warn">Update</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state"><i class="fas fa-check-circle" style="color:rgba(46,125,50,0.3);"></i><p>All products in stock</p></div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-chart-bar"></i></div>
+            <span class="panel-title">Quick Statistics</span>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="grid-4">
+            <div style="text-align:center; padding:16px 0;">
+                <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Pending Payments</div>
+                <div style="font-family:'Playfair Display',serif; font-size:36px; font-weight:700; color:var(--espresso); line-height:1;">@Model.PendingPayments</div>
+            </div>
+            <div style="text-align:center; padding:16px 0; border-left:1px solid var(--border);">
+                <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Pending Orders</div>
+                <div style="font-family:'Playfair Display',serif; font-size:36px; font-weight:700; color:var(--caramel); line-height:1;">@(Model.RecentOrders?.Count(o => o.OrderStatus == "Pending") ?? 0)</div>
+            </div>
+            <div style="text-align:center; padding:16px 0; border-left:1px solid var(--border);">
+                <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Completed Orders</div>
+                <div style="font-family:'Playfair Display',serif; font-size:36px; font-weight:700; color:#2e7d32; line-height:1;">@(Model.RecentOrders?.Count(o => o.OrderStatus == "Completed") ?? 0)</div>
+            </div>
+            <div style="text-align:center; padding:16px 0; border-left:1px solid var(--border);">
+                <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Low Stock Items</div>
+                <div style="font-family:'Playfair Display',serif; font-size:36px; font-weight:700; color:#c0392b; line-height:1;">@(Model.LowStockProducts?.Count() ?? 0)</div>
+            </div>
+        </div>
+    </div>
+</div>

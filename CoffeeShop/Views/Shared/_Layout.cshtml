@@ -1,0 +1,379 @@
+﻿@inject IHttpContextAccessor HttpContextAcessor
+@{
+    var cartCount = HttpContextAcessor?.HttpContext?.Session.GetInt32("cartCount") ?? 0;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <link rel="shortcut icon" href="~/images/coffee-icon-sign-symbol-design-free-png.webp" type="image/x-icon">
+    <title>@ViewData["Title"] — Coffee Shop</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css">
+
+    <style>
+        :root {
+            --espresso: #1c0f08;
+            --caramel: #b5752a;
+            --latte: #d4a96a;
+            --cream: #f5ede0;
+            --foam: #faf6f0;
+            --border: rgba(181,117,42,0.14);
+            --muted: #7a6a5a;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--foam);
+            color: var(--espresso);
+            overflow-x: hidden;
+        }
+
+        /* ── NAVBAR ── */
+        .site-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(250,246,240,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: 68px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Brand */
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            text-decoration: none;
+        }
+
+            .nav-brand img {
+                height: 38px;
+            }
+
+        .nav-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        /* The nav link list we control */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            /* Regular <a> links */
+            .nav-links > li > a {
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                letter-spacing: 0.4px;
+                color: var(--espresso);
+                text-decoration: none;
+                padding: 8px 13px;
+                display: block;
+                border-bottom: 2px solid transparent;
+                transition: color 0.2s, border-color 0.2s;
+            }
+
+                .nav-links > li > a:hover,
+                .nav-links > li > a.active {
+                    color: var(--caramel);
+                    border-bottom-color: var(--caramel);
+                }
+
+            /* ── _LoginPartial integration ──
+                   The partial renders: <ul class="navbar-nav"> with a dropdown li inside.
+                   We need that ul to sit inline (not block) and override Bootstrap defaults. */
+            .nav-links .navbar-nav {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                gap: 0;
+            }
+                /* The dropdown toggle — a user icon <a> */
+                .nav-links .navbar-nav .nav-link {
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: var(--espresso) !important;
+                    padding: 8px 13px;
+                    border-bottom: 2px solid transparent;
+                    transition: color 0.2s, border-color 0.2s;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                    .nav-links .navbar-nav .nav-link:hover {
+                        color: var(--caramel) !important;
+                        border-bottom-color: var(--caramel);
+                    }
+
+            /* Dropdown menu */
+            .nav-links .dropdown-menu {
+                border: 1px solid var(--border) !important;
+                border-radius: 3px !important;
+                box-shadow: 0 8px 24px rgba(28,15,8,0.10) !important;
+                background: var(--foam) !important;
+                padding: 6px 0 !important;
+                min-width: 130px;
+                margin-top: 6px !important;
+            }
+
+            .nav-links .dropdown-item {
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--espresso) !important;
+                padding: 9px 16px;
+                transition: background 0.15s, color 0.15s;
+            }
+
+                .nav-links .dropdown-item:hover {
+                    background: var(--cream) !important;
+                    color: var(--caramel) !important;
+                }
+
+            /* Login link styled as a button pill */
+            .nav-links .navbar-nav .nav-item .dropdown-item.login-btn,
+            .nav-links .navbar-nav li > a.login-btn,
+            .nav-login-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: transparent;
+                border: 1.5px solid rgba(181,117,42,0.35);
+                color: var(--caramel) !important;
+                padding: 7px 16px !important;
+                border-radius: 2px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 11px !important;
+                font-weight: 500;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                text-decoration: none;
+                transition: all 0.2s;
+                margin: 0 4px;
+            }
+
+                .nav-login-btn:hover {
+                    background: var(--caramel) !important;
+                    color: white !important;
+                    border-color: var(--caramel);
+                }
+
+        /* Cart pill */
+        .nav-cart-link {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--espresso);
+            color: var(--cream) !important;
+            padding: 9px 18px;
+            border-bottom: none !important;
+            border-radius: 2px;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+
+            .nav-cart-link:hover {
+                background: var(--caramel) !important;
+                color: white !important;
+            }
+
+        .cart-badge {
+            background: var(--caramel);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Hamburger toggle */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+            .nav-toggle span {
+                display: block;
+                width: 22px;
+                height: 2px;
+                background: var(--espresso);
+                margin: 5px 0;
+                border-radius: 1px;
+                transition: all 0.3s;
+            }
+
+        @@media (max-width: 900px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            #navLinks {
+                display: none !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                position: absolute;
+                top: 68px;
+                left: 0;
+                right: 0;
+                background: var(--foam);
+                border-bottom: 1px solid var(--border);
+                padding: 12px 20px 16px;
+                box-shadow: 0 8px 24px rgba(28,15,8,0.08);
+                gap: 0 !important;
+            }
+
+                #navLinks.open {
+                    display: flex !important;
+                }
+
+            .nav-links > li, .nav-links .navbar-nav {
+                width: 100%;
+            }
+
+                .nav-links > li > a {
+                    padding: 11px 0;
+                    border-bottom: 1px solid rgba(181,117,42,0.08) !important;
+                    width: 100%;
+                }
+        }
+
+        .body-offset {
+            padding-top: 68px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="site-nav">
+        <div class="nav-inner">
+
+            <a asp-controller="Home" asp-action="Index" class="nav-brand">
+                <img src="~/images/coffee-icon-sign-symbol-design-free-png.webp" alt="Coffee Shop">
+                <span class="nav-brand-name">Coffee Shop</span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li>
+                    <a asp-controller="Home" asp-action="Index"
+                       class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">Home</a>
+                </li>
+                <li>
+                    <a asp-controller="Products" asp-action="Shop"
+                       class="@(currentController == "Products" && currentAction == "Shop" ? "active" : "")">Shop</a>
+                </li>
+                <li>
+                    <a asp-controller="Home" asp-action="Contact">Contact</a>
+                </li>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a asp-controller="Admin" asp-action="Dashboard">
+                                <i class="fas fa-shield-alt" style="font-size:11px;margin-right:4px;"></i>Admin
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a asp-controller="UserDashboard" asp-action="Index"
+                               class="@(currentController == "UserDashboard" ? "active" : "")">
+                                <i class="fas fa-user" style="font-size:11px;margin-right:4px;opacity:0.75;"></i>Dashboard
+                            </a>
+                        </li>
+                    }
+                }
+
+                @* _LoginPartial renders a <ul class="navbar-nav"> with a user-icon dropdown.
+               When logged out: shows Register / Login items.
+               When logged in: shows Logout item. *@
+                <partial name="_LoginPartial" />
+
+                <li>
+                    <a asp-controller="ShoppingCart" asp-action="Index" class="nav-cart-link">
+                        <i class="fas fa-shopping-bag" style="font-size:12px;"></i>
+                        Cart
+                        @if (cartCount > 0)
+                        {
+                            <span class="cart-badge">@cartCount</span>
+                        }
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="body-offset">
+        @RenderBody()
+    </div>
+
+    <partial name="_Footer" />
+
+    <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('navToggle').addEventListener('click', function () {
+            document.getElementById('navLinks').classList.toggle('open');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", false)
+</body>
+</html>

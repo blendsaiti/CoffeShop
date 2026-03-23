@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Wishlist>
+@{
+    ViewData["Title"] = "My Wishlist";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="ud-page-header">
+    <div class="ud-eyebrow">Account</div>
+    <h1 class="ud-title">My <em>Wishlist</em></h1>
+</div>
+
+@if (Model?.Any() == true)
+{
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        @foreach (var item in Model)
+        {
+            <div class="ud-panel" style="margin-bottom:0;overflow:hidden;">
+                <div style="height:200px;overflow:hidden;background:var(--foam);">
+                    <img src="@item.Product?.ImageUrl" alt="@item.Product?.Name"
+                         style="width:100%;height:100%;object-fit:contain;padding:12px;transition:transform 0.3s;"
+                         onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                </div>
+                <div style="padding:16px;">
+                    <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--espresso);margin-bottom:5px;">@item.Product?.Name</div>
+                    <div style="font-size:18px;font-weight:700;color:var(--caramel);margin-bottom:14px;">$@item.Product?.Price</div>
+                    <div style="display:flex;gap:8px;">
+                        <a href="/ShoppingCart/AddToShoppingCart/@item.ProductID" class="u-btn u-btn-primary u-btn-sm" style="flex:1;justify-content:center;">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </a>
+                        <form asp-action="RemoveFromWishlist" method="post" style="margin:0;">
+                            <input type="hidden" name="productId" value="@item.ProductID" />
+                            <button type="submit" class="u-btn u-btn-danger u-btn-sm"><i class="fas fa-heart-broken"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="ud-panel">
+        <div class="u-empty">
+            <i class="fas fa-heart"></i>
+            <p>Your wishlist is empty. Start saving products you love!</p>
+            <a href="/Products/Shop" class="u-btn u-btn-primary">Browse Products</a>
+        </div>
+    </div>
+}

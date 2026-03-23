@@ -1,0 +1,110 @@
+﻿@using CoffeeShop.ViewModels
+@model UserDashboardViewModel
+@{
+    ViewData["Title"] = "My Dashboard";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="ud-page-header">
+    <div class="ud-eyebrow">Welcome back</div>
+    <h1 class="ud-title">Hello, <em>@User.Identity.Name</em></h1>
+</div>
+
+<!-- Stat strip -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:28px;">
+    <div class="ud-panel" style="margin-bottom:0; padding:20px; text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Total Orders</div>
+        <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--espresso);">@(Model?.TotalOrders ?? 0)</div>
+        <a href="/UserDashboard/OrderHistory" style="font-size:11px;color:var(--caramel);text-decoration:none;margin-top:6px;display:inline-block;">View all →</a>
+    </div>
+    <div class="ud-panel" style="margin-bottom:0; padding:20px; text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Total Spent</div>
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--caramel);">$@((Model?.TotalSpent ?? 0).ToString("0.00"))</div>
+    </div>
+    <div class="ud-panel" style="margin-bottom:0; padding:20px; text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Wishlist</div>
+        <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--espresso);">@(Model?.WishlistCount ?? 0)</div>
+        <a href="/UserDashboard/Wishlist" style="font-size:11px;color:var(--caramel);text-decoration:none;margin-top:6px;display:inline-block;">View →</a>
+    </div>
+    <div class="ud-panel" style="margin-bottom:0; padding:20px; text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">My Reviews</div>
+        <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--espresso);">@(Model?.ReviewCount ?? 0)</div>
+        <a href="/UserDashboard/MyReviews" style="font-size:11px;color:var(--caramel);text-decoration:none;margin-top:6px;display:inline-block;">View →</a>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="ud-panel">
+    <div class="ud-panel-header">
+        <div class="ud-panel-title-grp">
+            <div class="ud-panel-icon"><i class="fas fa-receipt"></i></div>
+            <span class="ud-panel-title">Recent Orders</span>
+        </div>
+        <a href="/UserDashboard/OrderHistory" class="u-btn u-btn-ghost u-btn-sm">View All</a>
+    </div>
+    <div class="ud-panel-body-flush">
+        @if (Model?.RecentOrders?.Any() == true)
+        {
+            <table class="ud-table">
+                <thead>
+                    <tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.RecentOrders.Take(5))
+                    {
+                        var cls = order.OrderStatus?.ToLower() switch
+                        {
+                                        "completed" => "completed",
+                                        "pending" => "pending",
+                                        "processing" => "processing",
+                                        "shipped" => "shipped",
+                                        "delivered" => "delivered",
+                                        _ => "cancelled"
+                        };
+                        <tr>
+                            <td><strong style="color:var(--caramel);">#@order.OrderID</strong></td>
+                            <td style="font-size:12px;color:var(--muted);">@order.OrderPlaced.ToString("MMM dd, yyyy")</td>
+                            <td style="color:var(--muted);">@(order.OrderDetails?.Count() ?? 0) items</td>
+                            <td><strong>$@order.OrderTotal.ToString("0.00")</strong></td>
+                            <td><span class="s-badge @cls">@order.OrderStatus</span></td>
+                            <td><a href="/UserDashboard/OrderDetails/@order.OrderID" class="u-btn u-btn-primary u-btn-sm">Details</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="u-empty">
+                <i class="fas fa-receipt"></i>
+                <p>No orders yet. Time to treat yourself!</p>
+                <a href="/Products/Shop" class="u-btn u-btn-primary">Browse Shop</a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+    <a href="/UserDashboard/Addresses" class="ud-panel" style="margin-bottom:0;padding:20px;text-decoration:none;display:flex;align-items:center;gap:14px;">
+        <div style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(181,117,42,0.25);display:flex;align-items:center;justify-content:center;color:var(--caramel);font-size:16px;flex-shrink:0;"><i class="fas fa-map-marker-alt"></i></div>
+        <div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--espresso);">My Addresses</div>
+            <div style="font-size:12px;color:var(--muted);">Manage shipping addresses</div>
+        </div>
+    </a>
+    <a href="/UserDashboard/Profile" class="ud-panel" style="margin-bottom:0;padding:20px;text-decoration:none;display:flex;align-items:center;gap:14px;">
+        <div style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(181,117,42,0.25);display:flex;align-items:center;justify-content:center;color:var(--caramel);font-size:16px;flex-shrink:0;"><i class="fas fa-user"></i></div>
+        <div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--espresso);">My Profile</div>
+            <div style="font-size:12px;color:var(--muted);">Edit account settings</div>
+        </div>
+    </a>
+    <a href="/UserDashboard/Wishlist" class="ud-panel" style="margin-bottom:0;padding:20px;text-decoration:none;display:flex;align-items:center;gap:14px;">
+        <div style="width:40px;height:40px;border-radius:50%;border:1px solid rgba(181,117,42,0.25);display:flex;align-items:center;justify-content:center;color:var(--caramel);font-size:16px;flex-shrink:0;"><i class="fas fa-heart"></i></div>
+        <div>
+            <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--espresso);">Wishlist</div>
+            <div style="font-size:12px;color:var(--muted);">Saved products</div>
+        </div>
+    </a>
+</div>

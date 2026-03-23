@@ -1,0 +1,315 @@
+﻿@page
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Two-factor Authentication";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --bg: #f2ede8;
+        --surface: #ffffff;
+        --border: rgba(181,117,42,0.13);
+        --muted: #7a6a5a;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg);
+    }
+
+    .manage-page {
+        padding: 36px 0 64px;
+    }
+
+    .manage-layout {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @@media(max-width:768px) {
+        .manage-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .manage-eyebrow {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .manage-eyebrow::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .manage-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--espresso);
+        margin: 0 0 24px;
+    }
+
+        .manage-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .manage-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .manage-panel-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .manage-panel-header-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .manage-panel-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel);
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+
+    .manage-panel-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--espresso);
+    }
+
+    .manage-panel-body {
+        padding: 24px;
+    }
+
+    .mf-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans',sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.18s;
+    }
+
+    .mf-btn-primary {
+        background: var(--espresso);
+        color: var(--cream);
+    }
+
+        .mf-btn-primary:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+    .mf-btn-danger {
+        background: transparent;
+        border: 1px solid rgba(192,57,43,0.2);
+        color: #c0392b;
+    }
+
+        .mf-btn-danger:hover {
+            background: #c0392b;
+            color: white;
+            border-color: #c0392b;
+        }
+
+    .mf-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 11px 14px;
+        border-radius: 2px;
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+
+        .mf-alert.success {
+            background: rgba(46,125,50,0.07);
+            border: 1px solid rgba(46,125,50,0.2);
+            color: #2e7d32;
+        }
+
+        .mf-alert.danger {
+            background: rgba(192,57,43,0.07);
+            border: 1px solid rgba(192,57,43,0.2);
+            color: #c0392b;
+        }
+
+    .mf-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-left: auto;
+        color: inherit;
+        opacity: 0.6;
+        font-size: 14px;
+        padding: 0;
+    }
+
+    .tfa-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 2px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+        .tfa-status.enabled {
+            background: rgba(46,125,50,0.08);
+            color: #2e7d32;
+            border: 1px solid rgba(46,125,50,0.2);
+        }
+
+        .tfa-status.disabled {
+            background: rgba(181,117,42,0.08);
+            color: var(--caramel);
+            border: 1px solid rgba(181,117,42,0.22);
+        }
+
+    .tfa-description {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .tfa-feature-list {
+        list-style: none;
+        margin: 0 0 24px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .tfa-feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+            .tfa-feature-list li i {
+                color: var(--caramel);
+                font-size: 11px;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+</style>
+
+<div class="manage-page">
+    <div class="container">
+        <div class="manage-layout">
+
+            <aside>
+                <partial name="_ManageNav" />
+            </aside>
+
+            <main>
+                <div class="manage-eyebrow">Account Settings</div>
+                <h1 class="manage-title">Two-factor <em>Authentication</em></h1>
+
+                <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+                <div class="manage-panel">
+                    <div class="manage-panel-header">
+                        <div class="manage-panel-header-left">
+                            <div class="manage-panel-icon"><i class="fas fa-shield-alt"></i></div>
+                            <span class="manage-panel-title">Two-factor Auth (2FA)</span>
+                        </div>
+                        @if (Model.Is2faEnabled)
+                        {
+                            <span class="tfa-status enabled"><i class="fas fa-check-circle" style="font-size:9px;"></i> Enabled</span>
+                        }
+                        else
+                        {
+                            <span class="tfa-status disabled"><i class="fas fa-times-circle" style="font-size:9px;"></i> Disabled</span>
+                        }
+                    </div>
+                    <div class="manage-panel-body">
+                        <p class="tfa-description">
+                            Two-factor authentication adds an extra layer of security to your account by requiring
+                            a verification code in addition to your password when you sign in.
+                        </p>
+
+                        <ul class="tfa-feature-list">
+                            <li><i class="fas fa-lock"></i> Protects against password theft</li>
+                            <li><i class="fas fa-mobile-alt"></i> Uses an authenticator app on your phone</li>
+                            <li><i class="fas fa-clock"></i> Codes expire every 30 seconds</li>
+                        </ul>
+
+                        @if (Model.Is2faEnabled)
+                        {
+                            <form method="post" asp-page-handler="Disable2fa">
+                                <button type="submit" class="mf-btn mf-btn-danger"
+                                        onclick="return confirm('Are you sure you want to disable two-factor authentication?')">
+                                    <i class="fas fa-shield-alt"></i> Disable 2FA
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-page="./EnableAuthenticator" class="mf-btn mf-btn-primary">
+                                <i class="fas fa-mobile-alt"></i> Enable Authenticator App
+                            </a>
+                        }
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+</div>

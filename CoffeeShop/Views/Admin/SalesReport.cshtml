@@ -1,0 +1,202 @@
+﻿@using CoffeeShop.ViewModels
+@model SalesReportViewModel
+@{
+    ViewData["Title"] = "Sales Report";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Finance</div>
+        <h1 class="page-title">Sales <em>Report</em></h1>
+    </div>
+    <div style="display:flex;gap:10px;">
+        <button onclick="window.print()" class="btn-cta btn-cta-outline"><i class="fas fa-print"></i> Print</button>
+        <a href="/Admin/Dashboard" class="btn-cta btn-cta-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+</div>
+
+<!-- Summary strip -->
+@if (Model.DailySales?.Any() == true || Model.RevenueByMonth?.Any() == true)
+{
+    <div class="grid-3" style="margin-bottom:24px;">
+        <div class="panel" style="padding:22px;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Avg Daily Sales</div>
+            <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--espresso);">
+                $@(Model.DailySales?.Any() == true ? Model.DailySales.Average(s => s.Value).ToString("0.00") : "0.00")
+            </div>
+        </div>
+        <div class="panel" style="padding:22px;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Avg Monthly Revenue</div>
+            <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--caramel);">
+                $@(Model.RevenueByMonth?.Any() == true ? Model.RevenueByMonth.Average(r => r.Value).ToString("0.00") : "0.00")
+            </div>
+        </div>
+        <div class="panel" style="padding:22px;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Top Products</div>
+            <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#2e7d32;">@(Model.TopProducts?.Count() ?? 0)</div>
+        </div>
+    </div>
+}
+
+<!-- Top Products -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-trophy"></i></div>
+            <span class="panel-title">Top Selling Products</span>
+        </div>
+        @if (Model.TopProducts?.Any() == true)
+        {
+            <span style="font-size:13px;font-weight:600;color:var(--caramel);">
+                Total: $@Model.TopProducts.Sum(p => p.Revenue).ToString("0.00")
+            </span>
+        }
+    </div>
+    <div class="panel-body-flush">
+        @if (Model.TopProducts?.Any() == true)
+        {
+            var maxRev = Model.TopProducts.Max(p => p.Revenue);
+            int rank = 1;
+            <table class="admin-table">
+                <thead>
+                    <tr><th>#</th><th>Product</th><th>Units Sold</th><th>Revenue</th><th style="width:200px;">Share</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TopProducts)
+                    {
+                        var pct = maxRev > 0 ? (int)((item.Revenue / maxRev) * 100) : 0;
+                        <tr>
+                            <td>
+                                <div style="width:26px;height:26px;border-radius:50%;background:@(rank == 1 ? "var(--caramel)" : rank == 2 ? "var(--espresso)" : "var(--foam)");color:@(rank <= 2 ? "var(--cream)" : "var(--muted)");display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">@rank</div>
+                            </td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                    {
+                                        <img src="@item.Product.ImageUrl" style="width:38px;height:38px;object-fit:contain;background:var(--foam);border:1px solid var(--border);border-radius:3px;padding:3px;">
+                                    }
+                                    <strong>@item.Product?.Name</strong>
+                                </div>
+                            </td>
+                            <td style="color:var(--muted);">@item.QuantitySold units</td>
+                            <td><strong style="color:var(--caramel);">$@item.Revenue.ToString("0.00")</strong></td>
+                            <td>
+                                <div class="admin-progress">
+                                    <div class="admin-progress-fill" style="width:@pct%"></div>
+                                </div>
+                                <span style="font-size:11px;color:var(--muted);">@pct%</span>
+                            </td>
+                        </tr>
+                        rank++;
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+
+            <div class="empty-state"><i class="fas fa-chart-bar"></i><p>No sales data yet.</p></div>
+        }
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Daily Sales -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-calendar-day"></i></div>
+                <span class="panel-title">Daily Sales <span style="font-size:12px;font-weight:400;color:var(--muted);">(Last 30 days)</span></span>
+            </div>
+            @if (Model.DailySales?.Any() == true)
+            {
+                <span style="font-size:13px;font-weight:600;color:var(--caramel);">$@Model.DailySales.Sum(s => s.Value).ToString("0.00")</span>
+            }
+        </div>
+        <div class="panel-body-flush" style="max-height:420px;overflow-y:auto;">
+            @if (Model.DailySales?.Any() == true)
+            {
+                var maxD = Model.DailySales.Max(s => s.Value);
+                <table class="admin-table">
+                    <thead><tr><th>Date</th><th>Revenue</th><th style="width:120px;">Bar</th></tr></thead>
+                    <tbody>
+                        @foreach (var sale in Model.DailySales.OrderByDescending(s => s.Key))
+                        {
+                            var pct = maxD > 0 ? (int)((sale.Value / maxD) * 100) : 0;
+                            <tr>
+                                <td style="font-size:12px;">@sale.Key.ToString("MMM dd, yyyy")</td>
+                                <td><strong>$@sale.Value.ToString("0.00")</strong></td>
+                                <td>
+                                    <div class="admin-progress"><div class="admin-progress-fill" style="width:@pct%"></div></div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+
+                <div class="empty-state"><i class="fas fa-calendar"></i><p>No daily data.</p></div>
+            }
+        </div>
+    </div>
+
+    <!-- Monthly Revenue -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-chart-line"></i></div>
+                <span class="panel-title">Monthly Revenue <span style="font-size:12px;font-weight:400;color:var(--muted);">(Last 12 months)</span></span>
+            </div>
+            @if (Model.RevenueByMonth?.Any() == true)
+            {
+                <span style="font-size:13px;font-weight:600;color:var(--caramel);">$@Model.RevenueByMonth.Sum(r => r.Value).ToString("0.00")</span>
+            }
+        </div>
+        <div class="panel-body-flush">
+            @if (Model.RevenueByMonth?.Any() == true)
+            {
+                var maxM = Model.RevenueByMonth.Max(r => r.Value);
+                <table class="admin-table">
+                    <thead><tr><th>Month</th><th>Revenue</th><th style="width:120px;">Bar</th></tr></thead>
+                    <tbody>
+                        @foreach (var rev in Model.RevenueByMonth.OrderByDescending(r => r.Key))
+                        {
+                            var pct = maxM > 0 ? (int)((rev.Value / maxM) * 100) : 0;
+                            <tr>
+                                <td style="font-weight:500;">@rev.Key</td>
+                                <td><strong style="color:var(--caramel);">$@rev.Value.ToString("0.00")</strong></td>
+                                <td>
+                                    <div class="admin-progress"><div class="admin-progress-fill" style="width:@pct%"></div></div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+
+                <div class="empty-state"><i class="fas fa-chart-line"></i><p>No monthly data.</p></div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .admin-sidebar, .admin-topbar, .page-header .btn-cta, .btn-cta {
+            display: none !important;
+        }
+
+        .admin-content {
+            margin-left: 0;
+        }
+
+        .admin-body {
+            padding: 0;
+        }
+    }
+</style>

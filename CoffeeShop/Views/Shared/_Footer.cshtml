@@ -1,0 +1,494 @@
+﻿<style>
+    .ecommerce-footer {
+        background: var(--espresso, #1c0f08);
+        color: rgba(245, 237, 224, 0.6);
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── NEWSLETTER BAND ───────────────────────────────────────────── */
+    .footer-newsletter {
+        background: var(--roast, #3b1f0e);
+        padding: 60px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .footer-newsletter::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b5752a' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+    .newsletter-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 48px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .newsletter-copy {
+        flex: 1;
+    }
+
+    .newsletter-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel, #b5752a);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .newsletter-eyebrow::before {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 1px;
+            background: var(--caramel, #b5752a);
+        }
+
+    .newsletter-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--cream, #f5ede0);
+        line-height: 1.15;
+        margin: 0;
+    }
+
+        .newsletter-title em {
+            font-style: italic;
+            color: var(--latte, #d4a96a);
+        }
+
+    .newsletter-form-wrap {
+        flex: 0 0 420px;
+    }
+
+    .newsletter-input-group {
+        display: flex;
+        border: 1px solid rgba(181,117,42,0.3);
+        border-radius: 2px;
+        overflow: hidden;
+        transition: border-color 0.3s;
+    }
+
+        .newsletter-input-group:focus-within {
+            border-color: var(--caramel, #b5752a);
+        }
+
+    .newsletter-input {
+        flex: 1;
+        background: rgba(255,255,255,0.05);
+        border: none;
+        padding: 16px 22px;
+        color: var(--cream, #f5ede0);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        outline: none;
+    }
+
+        .newsletter-input::placeholder {
+            color: rgba(245,237,224,0.3);
+        }
+
+    .newsletter-btn {
+        background: var(--caramel, #b5752a);
+        border: none;
+        padding: 16px 28px;
+        color: var(--cream, #f5ede0);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.25s;
+        white-space: nowrap;
+    }
+
+        .newsletter-btn:hover {
+            background: var(--latte, #d4a96a);
+            color: var(--espresso, #1c0f08);
+        }
+
+    .newsletter-note {
+        font-size: 12px;
+        color: rgba(245,237,224,0.3);
+        margin-top: 10px;
+    }
+
+    /* ── MAIN FOOTER BODY ──────────────────────────────────────────── */
+    .footer-body {
+        padding: 72px 0 48px;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .footer-brand {
+        padding-right: 32px;
+    }
+
+    .footer-logo-mark {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+        .footer-logo-mark img {
+            height: 100%;
+            width: 20%;
+            filter: brightness(0) invert(1) sepia(1) saturate(2) hue-rotate(5deg) brightness(0.85);
+            opacity: 0.9;
+        }
+
+        .footer-logo-mark span {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--cream, #f5ede0);
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+    .footer-brand-text {
+        font-size: 14px;
+        line-height: 1.8;
+        color: rgba(245,237,224,0.5);
+        margin-bottom: 28px;
+        max-width: 240px;
+    }
+
+    .footer-social {
+        display: flex;
+        gap: 10px;
+    }
+
+    .social-link {
+        width: 38px;
+        height: 38px;
+        border-radius: 2px;
+        border: 1px solid rgba(181,117,42,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(245,237,224,0.5);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.25s;
+    }
+
+        .social-link:hover {
+            background: var(--caramel, #b5752a);
+            border-color: var(--caramel, #b5752a);
+            color: var(--cream, #f5ede0);
+            transform: translateY(-3px);
+        }
+
+    /* Column titles */
+    .footer-col-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel, #b5752a);
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .footer-col-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(181,117,42,0.2);
+        }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .footer-links a {
+            color: rgba(245,237,224,0.5);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            transition: color 0.25s, gap 0.25s;
+        }
+
+            .footer-links a::before {
+                content: '—';
+                font-size: 10px;
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
+                transition: opacity 0.25s, width 0.25s;
+                color: var(--caramel, #b5752a);
+            }
+
+            .footer-links a:hover {
+                color: var(--latte, #d4a96a);
+                gap: 6px;
+            }
+
+                .footer-links a:hover::before {
+                    opacity: 1;
+                    width: 14px;
+                }
+
+    /* Contact list */
+    .footer-contact {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+        .footer-contact li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-size: 14px;
+            color: rgba(245,237,224,0.5);
+            line-height: 1.5;
+        }
+
+    .contact-icon-ring {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border: 1px solid rgba(181,117,42,0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel, #b5752a);
+        font-size: 12px;
+    }
+
+    /* ── FOOTER BOTTOM ─────────────────────────────────────────────── */
+    .footer-bottom {
+        padding: 28px 0;
+    }
+
+    .footer-bottom-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .copyright {
+        font-size: 13px;
+        color: rgba(245,237,224,0.3);
+    }
+
+        .copyright a {
+            color: var(--caramel, #b5752a);
+            text-decoration: none;
+        }
+
+    .payment-methods {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .payment-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(245,237,224,0.25);
+    }
+
+    .payment-icon {
+        height: 15px;
+        opacity: 0.65;
+        filter: brightness(0) invert(1);
+        transition: opacity 0.25s;
+    }
+
+        .payment-icon:hover {
+            opacity: 0.85;
+        }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @@media (max-width: 991px) {
+        .newsletter-inner {
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .newsletter-form-wrap {
+            flex: none;
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .footer-body {
+            padding: 48px 0 32px;
+        }
+
+        .footer-brand {
+            padding-right: 0;
+            margin-bottom: 36px;
+        }
+
+        .footer-bottom-inner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .payment-methods {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<footer class="ecommerce-footer">
+
+    <!-- Newsletter Band -->
+    <div class="footer-newsletter">
+        <div class="container">
+            <div class="newsletter-inner">
+                <div class="newsletter-copy">
+                    <div class="newsletter-eyebrow">Stay Connected</div>
+                    <h5 class="newsletter-title">Get the <em>Freshest</em> Updates</h5>
+                </div>
+                <div class="newsletter-form-wrap">
+                    <div class="newsletter-input-group">
+                        <input type="email" class="newsletter-input" placeholder="Your email address">
+                        <button class="newsletter-btn" type="button">Subscribe</button>
+                    </div>
+                    <p class="newsletter-note">No spam. Only new roasts, deals & brewing tips.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Body -->
+    <div class="footer-body">
+        <div class="container">
+            <div class="row">
+
+                <!-- Brand -->
+                <div class="col-lg-3 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-brand">
+                        <div class="footer-logo-mark">
+                            <img src="~/images/coffee-icon-sign-symbol-design-free-png.webp" alt="Coffee Shop">
+                            <span>Coffee Shop</span>
+                        </div>
+                        <p class="footer-brand-text">
+                            Your destination for premium beans, espresso machines, and everything you need for the perfect cup.
+                        </p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-col-label">Explore</div>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/Products/Shop">Shop</a></li>
+                        <li><a href="/About">About Us</a></li>
+                        <li><a href="/Contact">Contact</a></li>
+                        <li><a href="/Blog">Blog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div class="col-lg-2 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-col-label">Account</div>
+                    <ul class="footer-links">
+                        <li><a href="/UserDashboard/Index">My Account</a></li>
+                        <li><a href="/UserDashboard/OrderHistory">Order Tracking</a></li>
+                        <li><a href="/UserDashboard/Wishlist">Wishlist</a></li>
+                        <li><a href="/FAQ">FAQ</a></li>
+                        <li><a href="/Returns">Returns</a></li>
+                    </ul>
+                </div>
+
+                <!-- Information -->
+                <div class="col-lg-2 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-col-label">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="/Privacy">Privacy Policy</a></li>
+                        <li><a href="/Terms">Terms & Conditions</a></li>
+                        <li><a href="/Shipping">Shipping Info</a></li>
+                        <li><a href="/Careers">Careers</a></li>
+                        <li><a href="/Sitemap">Sitemap</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-lg-3 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-col-label">Contact</div>
+                    <ul class="footer-contact">
+                        <li>
+                            <div class="contact-icon-ring"><i class="fas fa-map-marker-alt"></i></div>
+                            <span>Kumanovo, North Macedonia</span>
+                        </li>
+                        <li>
+                            <div class="contact-icon-ring"><i class="fas fa-phone"></i></div>
+                            <span>+389 XX XXX XXX</span>
+                        </li>
+                        <li>
+                            <div class="contact-icon-ring"><i class="fas fa-envelope"></i></div>
+                            <span>info@coffeeshop.com</span>
+                        </li>
+                        <li>
+                            <div class="contact-icon-ring"><i class="fas fa-clock"></i></div>
+                            <span>Mon – Sat: 8:00 AM – 8:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="footer-bottom-inner">
+                <p class="copyright mb-0">
+                    &copy; @DateTime.Now.Year <a href="/">Coffee Shop</a>, Kumanovo. All rights reserved.
+                </p>
+                <div class="payment-methods">
+                    <span class="payment-label">We accept</span>
+                    <img src="~/images/payments/visa.png" alt="Visa" class="payment-icon">
+                    <img src="~/images/payments/mastercard.png" alt="Mastercard" class="payment-icon">
+                    <img src="~/images/payments/paypal.png" alt="PayPal" class="payment-icon">
+                    <img src="~/images/payments/stripe.png" alt="Stripe" class="payment-icon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</footer>

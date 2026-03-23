@@ -1,0 +1,13 @@
+﻿@model string
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    var isError = Model.StartsWith("Error");
+    <div class="mf-alert @(isError ? "danger" : "success")" role="alert">
+        <i class="fas @(isError ? "fa-exclamation-circle" : "fa-check-circle")" style="font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+        <span>@Model</span>
+        <button type="button" class="mf-close" onclick="this.parentElement.remove()" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+}

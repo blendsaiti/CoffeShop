@@ -1,0 +1,233 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    var statusCls = Model.OrderStatus?.ToLower() switch {
+        "completed" => "completed", "pending" => "pending", "processing" => "processing",
+        "shipped" => "shipped", "delivered" => "delivered", "cancelled" => "cancelled", _ => "pending"
+    };
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Orders</div>
+        <h1 class="page-title">Order <em>#@Model.OrderID</em></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+        <span class="status-badge @statusCls" style="font-size:12px;padding:6px 14px;">@Model.OrderStatus</span>
+        <a asp-action="Orders" class="btn-cta btn-cta-outline"><i class="fas fa-arrow-left"></i> All Orders</a>
+    </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:24px;">
+
+    <!-- Status Update -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-sync-alt"></i></div>
+                <span class="panel-title">Update Status</span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <form asp-action="UpdateOrderStatus" method="post">
+                <input type="hidden" name="orderId" value="@Model.OrderID" />
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;">New Status</label>
+                    <select name="status" style="width:100%;background:var(--foam);border:1px solid rgba(181,117,42,0.2);border-radius:2px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+                        @foreach (var s in new[] { "Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Completed" })
+                        {
+                            @if (Model.OrderStatus == s)
+                            {
+                                <option value="@s" selected>@s</option>
+                            }
+                            else
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        }
+
+                    </select>
+                </div>
+                <button type="submit" class="btn-cta" style="width:100%;justify-content:center;">
+                    <i class="fas fa-check"></i> Update Status
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Info -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-info-circle"></i></div>
+                <span class="panel-title">Order Information</span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;">
+                    <span style="color:var(--muted);">Order Date</span>
+                    <strong>@Model.OrderPlaced.ToString("MMM dd, yyyy HH:mm")</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:12px;border-top:1px solid var(--border);">
+                    <span style="color:var(--muted);">Order Total</span>
+                    <strong style="font-family:'Playfair Display',serif;font-size:20px;color:var(--caramel);">$@Model.OrderTotal.ToString("0.00")</strong>
+                </div>
+                @if (Model.ShippedDate.HasValue)
+                {
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:12px;border-top:1px solid var(--border);">
+                        <span style="color:var(--muted);">Shipped</span>
+                        <strong>@Model.ShippedDate.Value.ToString("MMM dd, yyyy")</strong>
+                    </div>
+                }
+                @if (Model.DeliveredDate.HasValue)
+                {
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:12px;border-top:1px solid var(--border);">
+                        <span style="color:var(--muted);">Delivered</span>
+                        <strong>@Model.DeliveredDate.Value.ToString("MMM dd, yyyy")</strong>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                {
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding-top:12px;border-top:1px solid var(--border);">
+                        <span style="color:var(--muted);">Tracking #</span>
+                        <strong style="font-family:monospace;">@Model.TrackingNumber</strong>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:24px;">
+
+    <!-- Customer -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-user"></i></div>
+                <span class="panel-title">Customer</span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);">
+                <div style="width:46px;height:46px;border-radius:50%;background:var(--espresso);color:var(--latte);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;flex-shrink:0;">@Model.FirstName.Substring(0,1)</div>
+                <div>
+                    <div style="font-weight:600;font-size:15px;">@Model.FirstName @Model.LastName</div>
+                    <div style="font-size:12px;color:var(--muted);">@Model.Email</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);">
+                <i class="fas fa-phone" style="color:var(--caramel);width:16px;"></i> @Model.Phone
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <span class="panel-title">Shipping Address</span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div style="font-size:14px;line-height:1.9;color:var(--text);">
+                @Model.Address<br>
+                @Model.City, @Model.PostalCode<br>
+                @Model.Country
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+                    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Notes</div>
+                    <p style="font-size:13px;color:var(--muted);font-style:italic;">@Model.Notes</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Order Items -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-shopping-bag"></i></div>
+            <span class="panel-title">Order Items</span>
+        </div>
+        <strong style="color:var(--caramel);font-family:'Playfair Display',serif;font-size:18px;">$@Model.OrderTotal.ToString("0.00")</strong>
+    </div>
+    <div class="panel-body-flush">
+        <table class="admin-table">
+            <thead>
+                <tr><th>Product</th><th>Unit Price</th><th>Qty</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderDetails)
+                {
+                    <tr>
+                        <td><strong>@item.Product?.Name</strong></td>
+                        <td style="color:var(--muted);">$@item.Price.ToString("0.00")</td>
+                        <td>× @item.Quantity</td>
+                        <td><strong style="color:var(--caramel);">$@((item.Price * item.Quantity).ToString("0.00"))</strong></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align:right;padding:14px 16px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">Order Total</td>
+                    <td style="padding:14px 16px;"><strong style="font-family:'Playfair Display',serif;font-size:20px;color:var(--caramel);">$@Model.OrderTotal.ToString("0.00")</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Payment -->
+@if (Model.Payment != null)
+{
+    var payCls = Model.Payment.PaymentStatus?.ToLower() switch { "completed" => "completed", "pending" => "pending", _ => "failed" };
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon"><i class="fas fa-credit-card"></i></div>
+                <span class="panel-title">Payment Information</span>
+            </div>
+            <span class="status-badge @payCls">@Model.Payment.PaymentStatus</span>
+        </div>
+        <div class="panel-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+                <div>
+                    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Method</div>
+                    <div style="font-size:14px;font-weight:500;">@Model.Payment.PaymentMethod</div>
+                </div>
+                <div>
+                    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Amount</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--caramel);">$@Model.Payment.Amount.ToString("0.00")</div>
+                </div>
+                <div>
+                    <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Date</div>
+                    <div style="font-size:13px;">@Model.Payment.PaymentDate.ToString("MMM dd, yyyy HH:mm")</div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Payment.TransactionID))
+                {
+                    <div>
+                        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Transaction ID</div>
+                        <div style="font-size:12px;font-family:monospace;color:var(--muted);">@Model.Payment.TransactionID</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Payment.LastFourDigits))
+                {
+                    <div>
+                        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Card</div>
+                        <div style="font-size:13px;">@Model.Payment.CardType •••• @Model.Payment.LastFourDigits</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

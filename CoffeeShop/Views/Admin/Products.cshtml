@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Manage Products";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Manage</div>
+        <h1 class="page-title">All <em>Products</em></h1>
+    </div>
+    <a asp-controller="Products" asp-action="Create" class="btn-cta"><i class="fas fa-plus"></i> Add Product</a>
+</div>
+
+@if (Model?.Any() == true)
+{
+    <!-- Mini stat strip -->
+    <div class="grid-4" style="margin-bottom:24px;">
+        @{
+            var total = Model.Count();
+            var avail = Model.Count(p => p.IsAvailable && p.StockQuantity > 0);
+            var lowStock = Model.Count(p => p.IsLowStock);
+            var outStock = Model.Count(p => p.StockQuantity == 0);
+        }
+        <div class="panel" style="text-align:center; padding:20px 0; margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Total</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--espresso);">@total</div>
+        </div>
+        <div class="panel" style="text-align:center; padding:20px 0; margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Available</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#2e7d32;">@avail</div>
+        </div>
+        <div class="panel" style="text-align:center; padding:20px 0; margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Low Stock</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--caramel);">@lowStock</div>
+        </div>
+        <div class="panel" style="text-align:center; padding:20px 0; margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Out of Stock</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#c0392b;">@outStock</div>
+        </div>
+    </div>
+}
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-box"></i></div>
+            <span class="panel-title">Product Catalogue</span>
+        </div>
+        <span style="font-size:12px; color:var(--muted);">@(Model?.Count() ?? 0) items</span>
+    </div>
+    <div class="panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="@product.ImageUrl" alt="@product.Name" style="width:44px;height:44px;object-fit:contain;background:var(--foam);border:1px solid var(--border);border-radius:3px;padding:3px;flex-shrink:0;">
+                                        }
+                                        <div>
+                                            <div style="font-weight:500;color:var(--text);font-size:13px;">@product.Name</div>
+                                            @if (product.IsTrendingProduct)
+                                            {
+                                                <span class="status-badge trending" style="margin-top:3px;display:inline-flex;">Best Seller</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--muted); font-size:12px;">@(product.Category?.Name ?? "—")</td>
+                                <td><strong>$@product.Price.ToString("0.00")</strong></td>
+                                <td>
+                                    @if (product.StockQuantity > 0)
+                                    {
+                                        <span class="status-badge @(product.IsLowStock ? "low-stock" : "in-stock")">@product.StockQuantity units</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge out-of-stock">Out of Stock</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="status-badge @(product.IsAvailable ? "available" : "unavailable")">
+                                        @(product.IsAvailable ? "Available" : "Hidden")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                        <a asp-controller="Products" asp-action="Detail" asp-route-id="@product.ProductID" class="action-btn action-btn-ghost">View</a>
+                                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.ProductID" class="action-btn action-btn-warn">Edit</a>
+                                        <form asp-controller="Products" asp-action="Delete" method="post" onsubmit="return confirm('Delete this product?');" style="margin:0;">
+                                            <input type="hidden" name="id" value="@product.ProductID" />
+                                            <button type="submit" class="action-btn action-btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>No products yet.</p>
+                <a asp-controller="Products" asp-action="Create" class="btn-cta" style="margin-top:16px; display:inline-flex;">Add First Product</a>
+            </div>
+        }
+    </div>
+</div>

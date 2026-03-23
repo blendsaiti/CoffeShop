@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Manage</div>
+        <h1 class="page-title">All <em>Orders</em></h1>
+    </div>
+    <a href="/Admin/Dashboard" class="btn-cta btn-cta-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-receipt"></i></div>
+            <span class="panel-title">Order List</span>
+        </div>
+        <span style="font-size:12px; color:var(--muted);">@(Model?.Count() ?? 0) total orders</span>
+    </div>
+    <div class="panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Email</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            var cls = order.OrderStatus?.ToLower() switch
+                            {
+                                            "completed" => "completed",
+                                            "pending" => "pending",
+                                            "processing" => "processing",
+                                            "shipped" => "shipped",
+                                            "delivered" => "delivered",
+                                            "cancelled" => "cancelled",
+                                            _ => "pending"
+                            };
+                            <tr>
+                                <td><strong style="color:var(--caramel);">#@order.OrderID</strong></td>
+                                <td><strong>@order.FirstName @order.LastName</strong></td>
+                                <td style="color:var(--muted); font-size:12px;">@order.Email</td>
+                                <td style="font-size:12px; color:var(--muted);">@order.OrderPlaced.ToString("MMM dd, yyyy HH:mm")</td>
+                                <td><strong>$@order.OrderTotal.ToString("0.00")</strong></td>
+                                <td><span class="status-badge @cls">@order.OrderStatus</span></td>
+                                <td><a asp-action="OrderDetails" asp-route-id="@order.OrderID" class="action-btn action-btn-primary">View Details</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state"><i class="fas fa-inbox"></i><p>No orders found.</p></div>
+        }
+    </div>
+</div>
