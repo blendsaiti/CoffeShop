@@ -1,0 +1,599 @@
+﻿@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #2e1810;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --border: rgba(181,117,42,0.14);
+        --muted: #7a6a5a;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .contact-page {
+        background: var(--foam);
+        min-height: 100vh;
+    }
+
+    /* ── HERO STRIP ── */
+    .contact-hero {
+        background: var(--espresso);
+        position: relative;
+        overflow: hidden;
+        padding: 80px 0 72px;
+        text-align: center;
+    }
+        /* dot-grain texture */
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23b5752a' fill-opacity='0.07'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        /* decorative ring */
+        .contact-hero::after {
+            content: '';
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            border: 1px solid rgba(181,117,42,0.1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+    .contact-hero-inner {
+        position: relative;
+        z-index: 1;
+    }
+
+    .contact-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+        .contact-eyebrow::before,
+        .contact-eyebrow::after {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 1px;
+            background: var(--caramel);
+            opacity: 0.5;
+        }
+
+    .contact-hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(36px, 5vw, 56px);
+        font-weight: 700;
+        line-height: 1.05;
+        color: var(--cream);
+        margin: 0 0 14px;
+    }
+
+        .contact-hero h1 em {
+            font-style: italic;
+            color: var(--latte);
+        }
+
+    .contact-hero p {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        font-style: italic;
+        color: rgba(212,169,106,0.6);
+        margin: 0;
+    }
+
+    /* ── BODY ── */
+    .contact-body {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 64px 32px 80px;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 48px;
+        align-items: start;
+    }
+
+    @@media (max-width: 860px) {
+        .contact-body {
+            grid-template-columns: 1fr;
+            padding: 40px 20px 60px;
+        }
+
+        .contact-info-col {
+            order: 2;
+        }
+
+        .contact-form-col {
+            order: 1;
+        }
+    }
+
+    /* ── FORM COLUMN ── */
+    .contact-form-col {
+    }
+
+    .contact-section-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .contact-section-label::before {
+            content: '';
+            display: block;
+            width: 18px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .contact-form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--espresso);
+        margin: 0 0 6px;
+        line-height: 1.1;
+    }
+
+        .contact-form-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .contact-form-sub {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0 0 32px;
+    }
+
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .cf-group {
+        margin-bottom: 20px;
+    }
+
+    .cf-label {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+        margin-bottom: 7px;
+    }
+
+    .cf-input,
+    .cf-textarea {
+        width: 100%;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        padding: 13px 15px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: var(--espresso);
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        -webkit-appearance: none;
+    }
+
+        .cf-input::placeholder,
+        .cf-textarea::placeholder {
+            color: rgba(122,106,90,0.4);
+        }
+
+        .cf-input:focus,
+        .cf-textarea:focus {
+            border-color: var(--caramel);
+            box-shadow: 0 0 0 3px rgba(181,117,42,0.09);
+        }
+
+    .cf-textarea {
+        resize: vertical;
+        min-height: 140px;
+        line-height: 1.6;
+    }
+
+    .cf-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @@media (max-width: 500px) {
+        .cf-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .cf-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--espresso);
+        color: var(--cream);
+        padding: 15px 36px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: background 0.2s, transform 0.15s;
+        margin-top: 6px;
+    }
+
+        .cf-submit:hover {
+            background: var(--caramel);
+            transform: translateY(-1px);
+        }
+
+        .cf-submit:active {
+            transform: translateY(0);
+        }
+
+        .cf-submit i {
+            font-size: 12px;
+        }
+
+    /* Success message (shown via JS) */
+    .cf-success {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        background: rgba(46,125,50,0.07);
+        border: 1px solid rgba(46,125,50,0.2);
+        color: #2e7d32;
+        border-radius: 2px;
+        padding: 13px 16px;
+        font-size: 14px;
+        margin-top: 16px;
+    }
+
+        .cf-success.show {
+            display: flex;
+        }
+
+    /* ── INFO COLUMN ── */
+    .contact-info-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    /* Map placeholder */
+    .info-map {
+        height: 200px;
+        background: var(--espresso);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .info-map::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23b5752a' fill-opacity='0.1'/%3E%3C/svg%3E");
+        }
+
+    .info-map-pin {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+        .info-map-pin i {
+            font-size: 32px;
+            color: var(--latte);
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 12px rgba(181,117,42,0.4));
+        }
+
+        .info-map-pin span {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            font-style: italic;
+            color: rgba(212,169,106,0.6);
+        }
+
+    /* Info rows */
+    .info-rows {
+        padding: 4px 0;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(181,117,42,0.06);
+        transition: background 0.15s;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row:hover {
+            background: var(--foam);
+        }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel);
+        font-size: 13px;
+    }
+
+    .info-text {
+    }
+
+    .info-label {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 3px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--espresso);
+        text-decoration: none;
+    }
+
+        .info-value:hover {
+            color: var(--caramel);
+        }
+
+    /* Hours card */
+    .hours-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .hours-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .hours-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel);
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+
+    .hours-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--espresso);
+    }
+
+    .hours-rows {
+        padding: 8px 0;
+    }
+
+    .hours-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 9px 20px;
+        font-size: 13px;
+        color: var(--muted);
+        border-bottom: 1px solid rgba(181,117,42,0.04);
+    }
+
+        .hours-row:last-child {
+            border-bottom: none;
+        }
+
+        .hours-row .day {
+            font-weight: 500;
+            color: var(--espresso);
+        }
+
+        .hours-row .time {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .hours-row.today {
+            background: rgba(181,117,42,0.04);
+        }
+
+            .hours-row.today .day {
+                color: var(--caramel);
+            }
+
+            .hours-row.today .time {
+                color: var(--caramel);
+            }
+</style>
+
+<div class="contact-page">
+
+    <!-- Hero -->
+    <div class="contact-hero">
+        <div class="contact-hero-inner">
+            <div class="contact-eyebrow">We'd love to hear from you</div>
+            <h1>Get in <em>Touch</em></h1>
+            <p>One of our team will be in contact with you shortly.</p>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="contact-body">
+
+        <!-- Form -->
+        <div class="contact-form-col">
+            <div class="contact-section-label">Send a message</div>
+            <h2 class="contact-form-title">Say <em>Hello</em></h2>
+            <p class="contact-form-sub">Fill in the form below and we'll get back to you within 24 hours.</p>
+
+            <form class="contact-form" method="POST" id="contactForm">
+                <div class="cf-row">
+                    <div class="cf-group">
+                        <label class="cf-label" for="cf-name">Full Name</label>
+                        <input type="text" id="cf-name" name="name" class="cf-input" placeholder="Your name" required>
+                    </div>
+                    <div class="cf-group">
+                        <label class="cf-label" for="cf-email">Email Address</label>
+                        <input type="email" id="cf-email" name="email" class="cf-input" placeholder="your@email.com" required>
+                    </div>
+                </div>
+                <div class="cf-group">
+                    <label class="cf-label" for="cf-subject">Subject</label>
+                    <input type="text" id="cf-subject" name="subject" class="cf-input" placeholder="How can we help?">
+                </div>
+                <div class="cf-group">
+                    <label class="cf-label" for="cf-message">Message</label>
+                    <textarea id="cf-message" name="message" class="cf-textarea" placeholder="Tell us about your inquiry…" required></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="cf-submit">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </div>
+
+                <div class="cf-success" id="cfSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    Thank you! Your message has been sent. We'll be in touch shortly.
+                </div>
+            </form>
+        </div>
+
+        <!-- Info -->
+        <div class="contact-info-col">
+
+            <!-- Map placeholder -->
+            <div class="info-card">
+                <div class="info-map">
+                    <div class="info-map-pin">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Kumanovo, North Macedonia</span>
+                    </div>
+                </div>
+                <div class="info-rows">
+                    <div class="info-row">
+                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">Address</div>
+                            <span class="info-value">Kumanovo, North Macedonia</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">Email</div>
+                            <a href="mailto:hello@coffeeshop.mk" class="info-value">hello@coffeeshop.mk</a>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="fas fa-phone"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">Phone</div>
+                            <a href="tel:+38931000000" class="info-value">+389 31 000 000</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hours -->
+            <div class="hours-card">
+                <div class="hours-header">
+                    <div class="hours-icon"><i class="fas fa-clock"></i></div>
+                    <span class="hours-title">Opening Hours</span>
+                </div>
+                <div class="hours-rows">
+                    <div class="hours-row today">
+                        <span class="day">Monday – Friday</span>
+                        <span class="time">7:00 am – 8:00 pm</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Saturday</span>
+                        <span class="time">8:00 am – 7:00 pm</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Sunday</span>
+                        <span class="time">9:00 am – 5:00 pm</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Show success message
+            document.getElementById('cfSuccess').classList.add('show');
+            this.reset();
+            // Scroll to success
+            document.getElementById('cfSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    </script>
+}

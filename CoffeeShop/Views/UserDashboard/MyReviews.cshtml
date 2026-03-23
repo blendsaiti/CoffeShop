@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Review>
+@{
+    ViewData["Title"] = "My Reviews";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="ud-page-header">
+    <div class="ud-eyebrow">Account</div>
+    <h1 class="ud-title">My <em>Reviews</em></h1>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="u-alert success"><i class="fas fa-check-circle"></i> @TempData["Success"]</div>
+}
+
+<div class="ud-panel">
+    <div class="ud-panel-header">
+        <div class="ud-panel-title-grp">
+            <div class="ud-panel-icon"><i class="fas fa-star"></i></div>
+            <span class="ud-panel-title">All My Reviews</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">@(Model?.Count() ?? 0) reviews</span>
+    </div>
+    <div class="ud-panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            @foreach (var review in Model)
+            {
+                <div style="padding:20px 22px;border-bottom:1px solid rgba(181,117,42,0.07);">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+                        <div style="flex:1;min-width:0;">
+                            <!-- Product name -->
+                            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--espresso);margin-bottom:8px;">
+                                @review.Product?.Name
+                            </div>
+                            <!-- Stars -->
+                            <div style="display:flex;gap:2px;margin-bottom:10px;">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= review.Rating ? "fas" : "far") fa-star" style="font-size:14px;color:var(--caramel);"></i>
+                                }
+                                <span style="font-size:12px;color:var(--muted);margin-left:6px;">@review.Rating/5</span>
+                            </div>
+                            <!-- Comment -->
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <p style="font-size:13px;color:var(--muted);font-style:italic;margin-bottom:8px;">"@review.Comment"</p>
+                            }
+                            <div style="font-size:11px;color:rgba(122,106,90,0.6);letter-spacing:0.5px;">
+                                Posted @review.ReviewDate.ToString("MMMM dd, yyyy")
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+                            <span class="s-badge @(review.IsApproved ? "approved" : "pending")">
+                                @(review.IsApproved ? "Approved" : "Pending")
+                            </span>
+                            <div style="display:flex;gap:7px;margin-top:6px;">
+                                <a asp-controller="Products" asp-action="Detail" asp-route-id="@review.ProductID" class="u-btn u-btn-ghost u-btn-sm">
+                                    <i class="fas fa-eye"></i> Product
+                                </a>
+                                <a asp-action="EditReview" asp-route-id="@review.ReviewID" class="u-btn u-btn-outline u-btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form asp-action="DeleteReview" method="post" style="margin:0;" onsubmit="return confirm('Delete this review?');">
+                                    <input type="hidden" name="id" value="@review.ReviewID" />
+                                    <button type="submit" class="u-btn u-btn-danger u-btn-sm"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="u-empty">
+                <i class="fas fa-star"></i>
+                <p>You haven't written any reviews yet.</p>
+                <a asp-controller="Products" asp-action="Shop" class="u-btn u-btn-primary">Shop Products</a>
+            </div>
+        }
+    </div>
+</div>

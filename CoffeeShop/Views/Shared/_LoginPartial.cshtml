@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        @* Logged in — nothing shown here; user sees Dashboard link + sidebar Logout *@
+    }
+    else
+    {
+        <li class="nav-item" style="display:flex;align-items:center;">
+            <a class="nav-login-btn" asp-area="Identity" asp-page="/Account/Login">
+                <i class="fas fa-user" style="font-size:10px;"></i> Login
+            </a>
+        </li>
+    }
+</ul>

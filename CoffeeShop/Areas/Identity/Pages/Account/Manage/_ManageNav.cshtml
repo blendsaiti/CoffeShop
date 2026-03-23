@@ -1,0 +1,108 @@
+﻿
+@{
+    var activePage = ViewData["ActivePage"] as string ?? ManageNavPages.Index;
+}
+
+<style>
+    .manage-sidenav {
+        background: #ffffff;
+        border: 1px solid rgba(181,117,42,0.13);
+        border-radius: 3px;
+        overflow: hidden;
+        position: sticky;
+        top: 84px;
+    }
+
+    .manage-sidenav-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(181,117,42,0.13);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .manage-sidenav-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b5752a;
+        font-size: 10px;
+    }
+
+    .manage-sidenav-heading {
+        font-family: 'Playfair Display', serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1c0f08;
+    }
+
+    .manage-sidenav-nav {
+        padding: 6px 0;
+    }
+
+        .manage-sidenav-nav a {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 16px;
+            text-decoration: none;
+            color: #7a6a5a;
+            font-size: 13px;
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+            .manage-sidenav-nav a i {
+                width: 14px;
+                font-size: 11px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+            .manage-sidenav-nav a:hover {
+                color: #b5752a;
+                background: rgba(181,117,42,0.04);
+                border-left-color: rgba(181,117,42,0.25);
+            }
+
+            .manage-sidenav-nav a.active {
+                color: #b5752a;
+                font-weight: 500;
+                border-left-color: #b5752a;
+                background: rgba(181,117,42,0.05);
+            }
+</style>
+
+<div class="manage-sidenav">
+    <div class="manage-sidenav-header">
+        <div class="manage-sidenav-icon"><i class="fas fa-cog"></i></div>
+        <span class="manage-sidenav-heading">Account Settings</span>
+    </div>
+    <nav class="manage-sidenav-nav">
+        <a asp-page="./Index"
+           class="@ManageNavPages.IndexNavClass(ViewContext)">
+            <i class="fas fa-user"></i> Profile
+        </a>
+        <a asp-page="./Email"
+           class="@ManageNavPages.EmailNavClass(ViewContext)">
+            <i class="fas fa-envelope"></i> Email
+        </a>
+        <a asp-page="./ChangePassword"
+           class="@ManageNavPages.ChangePasswordNavClass(ViewContext)">
+            <i class="fas fa-lock"></i> Password
+        </a>
+        <a asp-page="./TwoFactorAuthentication"
+           class="@ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)">
+            <i class="fas fa-shield-alt"></i> Two-factor Auth
+        </a>
+        <a asp-page="./PersonalData"
+           class="@ManageNavPages.PersonalDataNavClass(ViewContext)">
+            <i class="fas fa-database"></i> Personal Data
+        </a>
+    </nav>
+</div>

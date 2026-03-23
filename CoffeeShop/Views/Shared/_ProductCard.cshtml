@@ -1,0 +1,142 @@
+﻿@model IEnumerable<Product>
+
+<div class="products-grid">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            var outOfStock = item.StockQuantity <= 0 || !item.IsAvailable;
+            var lowStock = item.StockQuantity > 0 && item.StockQuantity <= 5 && item.IsAvailable;
+
+            <div class="product-card @(outOfStock ? "card-out-of-stock" : "")">
+
+                <div class="product-img-wrap">
+                    <img src="@item.ImageUrl" alt="@item.Name">
+
+                    @* Stock badge overlaid on image corner *@
+                    @if (outOfStock)
+                    {
+                        <div class="stock-overlay-badge out">Out of Stock</div>
+                    }
+                    else if (lowStock)
+                    {
+                        <div class="stock-overlay-badge low">Only @item.StockQuantity left</div>
+                    }
+
+                    <div class="product-overlay">
+                        <a href="/Products/Detail/@item.ProductID" class="overlay-btn" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="/UserDashboard/AddToWishlist?productId=@item.ProductID" class="overlay-btn" title="Wishlist">
+                            <i class="fas fa-heart"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <div class="product-cat">@(item.Category?.Name ?? "Coffee")</div>
+                    <div class="product-name">
+                        <a asp-controller="Products" asp-action="Detail" asp-route-id="@item.ProductID">@item.Name</a>
+                    </div>
+                    <div class="product-footer">
+                        <span class="product-price">@item.Price.ToString("c")</span>
+
+                        @if (outOfStock)
+                        {
+                            <span class="cart-btn cart-btn--disabled" title="Out of stock">
+                                <i class="fas fa-ban"></i> Out of Stock
+                            </span>
+                        }
+                        else
+                        {
+                            <a asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-pId="@item.ProductID" class="cart-btn">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="admin-actions">
+                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@item.ProductID" class="btn-edit">
+                            <i class="fas fa-pen"></i> Edit
+                        </a>
+                        @Html.AntiForgeryToken()
+                        <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@item.ProductID" style="flex:1;display:flex;">
+                            <button type="submit" class="btn-delete">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                }
+
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-coffee"></i>
+            <p>No products available yet — check back soon.</p>
+        </div>
+    }
+</div>
+
+<style>
+    /* ── Desaturate out-of-stock card image ── */
+    .card-out-of-stock .product-img-wrap img {
+        filter: grayscale(40%) opacity(0.72);
+        transition: filter 0.3s;
+    }
+
+    /* ── Corner badge on image ── */
+    .stock-overlay-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 2;
+        padding: 4px 10px;
+        border-radius: 2px;
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        pointer-events: none;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        .stock-overlay-badge.out {
+            background: rgba(192,57,43,0.90);
+            color: white;
+        }
+
+        .stock-overlay-badge.low {
+            background: rgba(181,117,42,0.90);
+            color: white;
+        }
+
+    /* ── Disabled "Out of Stock" button ── */
+    .cart-btn--disabled {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 2px;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'DM Sans', sans-serif;
+        background: rgba(122,106,90,0.08);
+        color: rgba(122,106,90,0.5);
+        border: 1px solid rgba(122,106,90,0.15);
+        cursor: not-allowed;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+        .cart-btn--disabled i {
+            font-size: 10px;
+        }
+</style>

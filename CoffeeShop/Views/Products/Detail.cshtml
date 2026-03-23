@@ -1,0 +1,840 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #3b1f0e;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --charcoal: #2a2018;
+        --warm-grey: #7a6a5a;
+    }
+
+    /* ── BREADCRUMB ────────────────────────────────────────────────── */
+    .detail-breadcrumb {
+        background: var(--espresso);
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .breadcrumb-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(245,237,224,0.35);
+        letter-spacing: 1px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        .breadcrumb-inner a {
+            color: rgba(245,237,224,0.35);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .breadcrumb-inner a:hover {
+                color: var(--latte);
+            }
+
+        .breadcrumb-inner .sep {
+            color: rgba(181,117,42,0.4);
+            font-size: 10px;
+        }
+
+        .breadcrumb-inner .current {
+            color: var(--latte);
+        }
+
+    /* ── PRODUCT DETAIL SECTION ────────────────────────────────────── */
+    .detail-section {
+        background: var(--foam);
+        padding: 80px 0 100px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .cart-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 11px 20px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.25s;
+        white-space: nowrap;
+    }
+
+        .cart-btn:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+    /* Image panel */
+    .detail-image-panel {
+        position: sticky;
+        top: 24px;
+    }
+
+    .detail-image-frame {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.12);
+        border-radius: 4px;
+        overflow: hidden;
+        height: 480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+        .detail-image-frame img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+
+        .detail-image-frame:hover img {
+            transform: scale(1.05);
+        }
+
+    .image-corner-deco {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-color: rgba(181,117,42,0.25);
+        border-style: solid;
+    }
+
+        .image-corner-deco.tl {
+            top: 16px;
+            left: 16px;
+            border-width: 1px 0 0 1px;
+        }
+
+        .image-corner-deco.br {
+            bottom: 16px;
+            right: 16px;
+            border-width: 0 1px 1px 0;
+        }
+
+    /* Info panel */
+    .detail-info-panel {
+        padding-left: 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .detail-eyebrow {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .detail-eyebrow::before {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .detail-name {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 900;
+        color: var(--espresso);
+        line-height: 1.05;
+        margin-bottom: 22px;
+    }
+
+    /* Rating */
+    .detail-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .stars {
+        display: flex;
+        gap: 3px;
+    }
+
+        .stars i {
+            color: var(--caramel);
+            font-size: 15px;
+        }
+
+            .stars i.empty {
+                color: rgba(181,117,42,0.25);
+            }
+
+    .rating-meta {
+        font-size: 13px;
+        color: var(--warm-grey);
+    }
+
+        .rating-meta strong {
+            color: var(--espresso);
+            font-weight: 500;
+        }
+
+    /* Price */
+    .detail-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-bottom: 24px;
+    }
+
+    .detail-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: 700;
+        color: var(--caramel);
+        line-height: 1;
+    }
+
+    .price-currency {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 400;
+        color: var(--latte);
+    }
+
+    /* Description */
+    .detail-description {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 19px;
+        font-weight: 300;
+        line-height: 1.75;
+        color: var(--warm-grey);
+        margin-bottom: 28px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    /* Meta tags */
+    .detail-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 28px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+    }
+
+    .meta-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(122,106,90,0.6);
+        min-width: 80px;
+    }
+
+    .meta-value {
+        color: var(--charcoal);
+        font-weight: 500;
+    }
+
+    /* Stock badges */
+    .stock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+        .stock-badge.in-stock {
+            background: rgba(46,125,50,0.08);
+            color: #2e7d32;
+            border: 1px solid rgba(46,125,50,0.2);
+        }
+
+        .stock-badge.low-stock {
+            background: rgba(181,117,42,0.08);
+            color: var(--caramel);
+            border: 1px solid rgba(181,117,42,0.25);
+        }
+
+        .stock-badge.out-of-stock {
+            background: rgba(192,57,43,0.08);
+            color: #c0392b;
+            border: 1px solid rgba(192,57,43,0.2);
+        }
+
+        .stock-badge i {
+            font-size: 9px;
+        }
+
+    /* Action buttons */
+    .detail-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-cart {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 16px 36px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+
+        .btn-add-cart:hover {
+            background: var(--caramel);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(181,117,42,0.3);
+        }
+
+        .btn-add-cart:disabled, .btn-add-cart.disabled {
+            background: rgba(122,106,90,0.2);
+            color: var(--warm-grey);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+    .btn-continue {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px solid rgba(181,117,42,0.35);
+        color: var(--caramel);
+        background: transparent;
+        padding: 14px 28px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.25s;
+    }
+
+        .btn-continue:hover {
+            background: var(--espresso);
+            border-color: var(--espresso);
+            color: var(--cream);
+        }
+
+    .btn-admin-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(181,117,42,0.3);
+        color: var(--caramel);
+        background: transparent;
+        padding: 10px 22px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.25s;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+    }
+
+        .btn-admin-edit:hover {
+            background: var(--caramel);
+            border-color: var(--caramel);
+            color: white;
+        }
+
+    /* ── REVIEWS SECTION ───────────────────────────────────────────── */
+    .reviews-section {
+        background: var(--cream);
+        padding: 80px 0 100px;
+        border-top: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .reviews-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 48px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(181,117,42,0.15);
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .section-label {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        .section-label::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .reviews-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px;
+        font-weight: 700;
+        color: var(--espresso);
+        line-height: 1.1;
+    }
+
+        .reviews-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .btn-write-review {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--espresso);
+        color: var(--cream);
+        padding: 13px 28px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+        transition: background 0.25s, transform 0.25s;
+        white-space: nowrap;
+    }
+
+        .btn-write-review:hover {
+            background: var(--caramel);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Review card */
+    .review-card {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.1);
+        border-radius: 4px;
+        padding: 28px 32px;
+        margin-bottom: 16px;
+        transition: box-shadow 0.3s;
+    }
+
+        .review-card:hover {
+            box-shadow: 0 8px 32px rgba(28,15,8,0.08);
+        }
+
+    .review-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        gap: 16px;
+    }
+
+    .reviewer-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--espresso);
+        color: var(--latte);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .reviewer-info {
+        flex: 1;
+    }
+
+    .reviewer-name {
+        font-weight: 500;
+        color: var(--espresso);
+        font-size: 15px;
+        margin-bottom: 4px;
+    }
+
+    .review-stars {
+        display: flex;
+        gap: 2px;
+    }
+
+        .review-stars i {
+            font-size: 12px;
+            color: var(--caramel);
+        }
+
+            .review-stars i.empty {
+                color: rgba(181,117,42,0.22);
+            }
+
+    .review-date {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: rgba(122,106,90,0.5);
+        white-space: nowrap;
+    }
+
+    .review-comment {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 17px;
+        font-weight: 300;
+        line-height: 1.75;
+        color: var(--warm-grey);
+        padding-left: 60px;
+    }
+
+    /* Empty reviews */
+    .reviews-empty {
+        background: white;
+        border: 1px dashed rgba(181,117,42,0.25);
+        border-radius: 4px;
+        padding: 60px 32px;
+        text-align: center;
+    }
+
+        .reviews-empty i {
+            font-size: 48px;
+            color: rgba(181,117,42,0.2);
+            margin-bottom: 18px;
+            display: block;
+        }
+
+        .reviews-empty p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-style: italic;
+            color: var(--warm-grey);
+            margin-bottom: 24px;
+        }
+
+    .btn-login-review {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px solid var(--caramel);
+        color: var(--caramel);
+        padding: 12px 28px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+        transition: all 0.25s;
+    }
+
+        .btn-login-review:hover {
+            background: var(--espresso);
+            border-color: var(--espresso);
+            color: var(--cream);
+        }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @@media (max-width: 991px) {
+        .detail-info-panel {
+            padding-left: 0;
+            margin-top: 40px;
+        }
+
+        .detail-image-panel {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .detail-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-add-cart, .btn-continue {
+            justify-content: center;
+        }
+
+        .review-comment {
+            padding-left: 0;
+            margin-top: 12px;
+        }
+    }
+</style>
+
+<!-- Breadcrumb -->
+<div class="detail-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-inner">
+            <a href="/">Home</a>
+            <span class="sep"><i class="fas fa-chevron-right"></i></span>
+            <a href="/Products/Shop">Shop</a>
+            <span class="sep"><i class="fas fa-chevron-right"></i></span>
+            <span class="current">@Model.Name</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ PRODUCT DETAIL ═══ -->
+<section class="detail-section">
+    <div class="container">
+        <div class="row">
+
+            <!-- Image -->
+            <div class="col-lg-6">
+                <div class="detail-image-panel">
+                    <div class="detail-image-frame">
+                        <div class="image-corner-deco tl"></div>
+                        <div class="image-corner-deco br"></div>
+                        <img src="@Model.ImageUrl" alt="@Model.Name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="col-lg-6">
+                <div class="detail-info-panel">
+
+                    <div class="detail-eyebrow">@(Model.Category?.Name ?? "Coffee")</div>
+                    <h1 class="detail-name">@Model.Name</h1>
+
+                    <!-- Rating -->
+                    @if (Model.ReviewCount > 0)
+                    {
+                        <div class="detail-rating">
+                            <div class="stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= Model.AverageRating ? "fas" : "far") fa-star @(i <= Model.AverageRating ? "" : "empty")"></i>
+                                }
+                            </div>
+                            <span class="rating-meta">
+                                <strong>@Model.AverageRating.ToString("0.0")</strong> &nbsp;·&nbsp; @Model.ReviewCount review@(Model.ReviewCount != 1 ? "s" : "")
+                            </span>
+                        </div>
+                    }
+
+                    <!-- Price -->
+                    <div class="detail-price-row">
+                        <span class="price-currency">$</span>
+                        <span class="detail-price">@Model.Price.ToString("0.00")</span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="detail-description">@Model.Detail</p>
+
+                    <!-- Meta -->
+                    <div class="detail-meta">
+                        <!-- Stock status -->
+                        <div class="meta-row">
+                            <span class="meta-label">Availability</span>
+                            @if (Model.StockQuantity > 0)
+                            {
+                                <span class="stock-badge @(Model.IsLowStock ? "low-stock" : "in-stock")">
+                                    <i class="fas fa-circle"></i>
+                                    @(Model.IsLowStock ? $"Only {Model.StockQuantity} left" : $"In Stock ({Model.StockQuantity})")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="stock-badge out-of-stock">
+                                    <i class="fas fa-circle"></i> Out of Stock
+                                </span>
+                            }
+                        </div>
+
+                        @if (Model.Category != null)
+                        {
+                            <div class="meta-row">
+                                <span class="meta-label">Category</span>
+                                <span class="meta-value">@Model.Category.Name</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Actions -->
+                    @Html.AntiForgeryToken()
+                    <div class="detail-actions">
+                        @if (Model.IsAvailable && Model.StockQuantity > 0)
+                        {
+                            <button type="button" class="cart-btn" onclick="addToCart(@Model.ProductID, this)">
+                                <i class="fas fa-shopping-cart"></i> Add
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="btn-add-cart disabled">
+                                <i class="fas fa-ban"></i> Out of Stock
+                            </span>
+                        }
+                        <a asp-controller="Products" asp-action="Shop" class="btn-continue">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div>
+                            <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductID" class="btn-admin-edit">
+                                <i class="fas fa-pen"></i> Edit Product
+                            </a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══ REVIEWS ═══ -->
+<section class="reviews-section">
+    <div class="container">
+
+        <div class="reviews-header">
+            <div>
+                <div class="section-label">What People Say</div>
+                <h2 class="reviews-title">Customer <em>Reviews</em></h2>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="UserDashboard" asp-action="AddReview" asp-route-productId="@Model.ProductID" class="btn-write-review">
+                    <i class="fas fa-pen-nib"></i> Write a Review
+                </a>
+            }
+        </div>
+
+        @if (Model.Reviews?.Any(r => r.IsApproved) == true)
+        {
+            @foreach (var review in Model.Reviews.Where(r => r.IsApproved).OrderByDescending(r => r.ReviewDate))
+            {
+                <div class="review-card">
+                    <div class="review-top">
+                        <div class="d-flex align-items-start gap-3" style="flex:1;">
+                            <div class="reviewer-avatar">@review.UserName.Substring(0, 1).ToUpper()</div>
+                            <div class="reviewer-info">
+                                <div class="reviewer-name">@review.UserName</div>
+                                <div class="review-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="@(i <= review.Rating ? "fas" : "far") fa-star @(i <= review.Rating ? "" : "empty")"></i>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <span class="review-date">@review.ReviewDate.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(review.Comment))
+                    {
+                        <p class="review-comment">@review.Comment</p>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="reviews-empty">
+                <i class="fas fa-comment-slash"></i>
+                <p>No reviews yet — be the first to share your thoughts.</p>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="UserDashboard" asp-action="AddReview" asp-route-productId="@Model.ProductID" class="btn-write-review">
+                        <i class="fas fa-pen-nib"></i> Write a Review
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn-login-review">
+                        <i class="fas fa-sign-in-alt"></i> Login to Review
+                    </a>
+                }
+            </div>
+        }
+
+    </div>
+</section>
+
+<script>
+     async function addToCart(productId, btn) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        const res = await fetch('/ShoppingCart/AddToShoppingCart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `productId=${productId}&__RequestVerificationToken=${encodeURIComponent(token)}`
+        });
+
+        if (res.ok) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            setTimeout(() => btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add', 1500);
+        }
+    }
+</script>

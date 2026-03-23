@@ -1,0 +1,87 @@
+﻿@using CoffeeShop.ViewModels
+@model EditReviewViewModel
+@{
+    ViewData["Title"] = "Edit Review";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="ud-page-header">
+    <div class="ud-eyebrow">Reviews</div>
+    <h1 class="ud-title">Edit <em>Review</em></h1>
+</div>
+
+<div style="max-width:680px;">
+    <div class="ud-panel">
+        <div class="ud-panel-header">
+            <div class="ud-panel-title-grp">
+                <div class="ud-panel-icon"><i class="fas fa-edit"></i></div>
+                <span class="ud-panel-title">@Model.ProductName</span>
+            </div>
+        </div>
+        <div class="ud-panel-body">
+            <form asp-action="EditReview" method="post">
+                <input type="hidden" asp-for="ReviewID" />
+                <input type="hidden" asp-for="ProductID" />
+                <input type="hidden" asp-for="ProductName" />
+
+                <div class="u-form-group">
+                    <label class="u-label">Your Rating *</label>
+                    <div class="rating-input">
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            <input type="radio" asp-for="Rating" value="@i" id="star@(i)"
+                                   checked="@(Model.Rating == i ? "checked" : null)" required />
+                            <label for="star@(i)" title="@i stars"><i class="fas fa-star"></i></label>
+                        }
+                    </div>
+                    <span asp-validation-for="Rating" class="u-validation"></span>
+                </div>
+
+                <div class="u-form-group">
+                    <label class="u-label">Your Review <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(Optional)</span></label>
+                    <textarea asp-for="Comment" class="u-input" rows="5" placeholder="Share your thoughts…" style="resize:vertical;"></textarea>
+                    <span asp-validation-for="Comment" class="u-validation"></span>
+                    <div style="font-size:11px;color:var(--muted);margin-top:5px;">Maximum 1000 characters</div>
+                </div>
+
+                <div style="display:flex;gap:10px;">
+                    <button type="submit" class="u-btn u-btn-primary"><i class="fas fa-save"></i> Update Review</button>
+                    <a asp-action="MyReviews" class="u-btn u-btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>
+        .rating-input {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+            .rating-input input[type="radio"] {
+                display: none;
+            }
+
+            .rating-input label {
+                cursor: pointer;
+                font-size: 28px;
+                color: rgba(181,117,42,0.2);
+                transition: color 0.15s;
+            }
+
+                .rating-input label i {
+                    pointer-events: none;
+                }
+
+                .rating-input input[type="radio"]:checked ~ label,
+                .rating-input label:hover,
+                .rating-input label:hover ~ label {
+                    color: var(--caramel);
+                }
+    </style>
+}

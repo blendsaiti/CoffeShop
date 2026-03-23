@@ -1,0 +1,96 @@
+﻿@model IEnumerable<Payment>
+@{
+    ViewData["Title"] = "Payments";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Finance</div>
+        <h1 class="page-title">Payment <em>Transactions</em></h1>
+    </div>
+    <a href="/Admin/Dashboard" class="btn-cta btn-cta-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+</div>
+
+@if (Model?.Any() == true)
+{
+    <div class="grid-4" style="margin-bottom:24px;">
+        <div class="panel" style="text-align:center;padding:20px 0;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Completed</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#2e7d32;">@Model.Count(p => p.PaymentStatus == "Completed")</div>
+        </div>
+        <div class="panel" style="text-align:center;padding:20px 0;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Pending</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--caramel);">@Model.Count(p => p.PaymentStatus == "Pending")</div>
+        </div>
+        <div class="panel" style="text-align:center;padding:20px 0;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Failed</div>
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#c0392b;">@Model.Count(p => p.PaymentStatus == "Failed")</div>
+        </div>
+        <div class="panel" style="text-align:center;padding:20px 0;margin-bottom:0;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Total Revenue</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--espresso);">$@Model.Where(p => p.PaymentStatus == "Completed").Sum(p => p.Amount).ToString("0.00")</div>
+        </div>
+    </div>
+}
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-credit-card"></i></div>
+            <span class="panel-title">All Payments</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">@(Model?.Count() ?? 0) records</span>
+    </div>
+    <div class="panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Order</th>
+                            <th>Method</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Transaction ID</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model)
+                        {
+                            var cls = payment.PaymentStatus?.ToLower() switch
+                            {
+                                            "completed" => "completed",
+                                            "pending" => "pending",
+                                            _ => "failed"
+                            };
+                            <tr>
+                                <td><strong style="color:var(--caramel);">#@payment.PaymentID</strong></td>
+                                <td><a href="/Admin/OrderDetails/@payment.OrderID" style="color:var(--caramel);text-decoration:none;font-weight:500;">#@payment.OrderID</a></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:7px;">
+                                        <i class="fas fa-@(payment.PaymentMethod == "CreditCard" ? "credit-card" : "money-bill-wave")" style="color:var(--caramel);font-size:13px;"></i>
+                                        @payment.PaymentMethod
+                                    </div>
+                                </td>
+                                <td><strong>$@payment.Amount.ToString("0.00")</strong></td>
+                                <td><span class="status-badge @cls">@payment.PaymentStatus</span></td>
+                                <td style="font-size:11px;color:var(--muted);font-family:monospace;">
+                                    @(string.IsNullOrEmpty(payment.TransactionID) ? "—" : payment.TransactionID)
+                                </td>
+                                <td style="font-size:12px;color:var(--muted);">@payment.PaymentDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state"><i class="fas fa-credit-card"></i><p>No payment records yet.</p></div>
+        }
+    </div>
+</div>

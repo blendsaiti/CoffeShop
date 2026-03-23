@@ -1,0 +1,313 @@
+﻿@page
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --bg: #f2ede8;
+        --surface: #ffffff;
+        --border: rgba(181,117,42,0.13);
+        --muted: #7a6a5a;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg);
+    }
+
+    .manage-page {
+        padding: 36px 0 64px;
+    }
+
+    .manage-layout {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @@media(max-width:768px) {
+        .manage-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .manage-eyebrow {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .manage-eyebrow::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .manage-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--espresso);
+        margin: 0 0 24px;
+    }
+
+        .manage-title em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .manage-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .manage-panel-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .manage-panel-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel);
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+
+    .manage-panel-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--espresso);
+    }
+
+    .manage-panel-body {
+        padding: 24px;
+    }
+
+    .mf-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans',sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.18s;
+    }
+
+    .mf-btn-primary {
+        background: var(--espresso);
+        color: var(--cream);
+    }
+
+        .mf-btn-primary:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+    .mf-btn-danger {
+        background: transparent;
+        border: 1px solid rgba(192,57,43,0.2);
+        color: #c0392b;
+    }
+
+        .mf-btn-danger:hover {
+            background: #c0392b;
+            color: white;
+            border-color: #c0392b;
+        }
+
+    .mf-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 11px 14px;
+        border-radius: 2px;
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+
+        .mf-alert.info {
+            background: rgba(181,117,42,0.07);
+            border: 1px solid rgba(181,117,42,0.2);
+            color: #92600a;
+        }
+
+    .data-action-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.06);
+    }
+
+        .data-action-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .data-action-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(181,117,42,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .data-action-icon.download {
+            color: var(--caramel);
+        }
+
+        .data-action-icon.delete {
+            color: #c0392b;
+            border-color: rgba(192,57,43,0.2);
+        }
+
+    .data-action-text {
+        flex: 1;
+    }
+
+    .data-action-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--espresso);
+        margin-bottom: 4px;
+    }
+
+    .data-action-desc {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .danger-zone {
+        background: rgba(192,57,43,0.03);
+        border: 1px solid rgba(192,57,43,0.15);
+        border-radius: 3px;
+        padding: 20px;
+        margin-top: 4px;
+    }
+
+    .danger-zone-title {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #c0392b;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="manage-page">
+    <div class="container">
+        <div class="manage-layout">
+
+            <aside>
+                <partial name="_ManageNav" />
+            </aside>
+
+            <main>
+                <div class="manage-eyebrow">Account Settings</div>
+                <h1 class="manage-title">Personal <em>Data</em></h1>
+
+                <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+                <div class="mf-alert info">
+                    <i class="fas fa-info-circle" style="font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+                    <span>Your account contains personal data which you can download or permanently delete at any time.</span>
+                </div>
+
+                <div class="manage-panel">
+                    <div class="manage-panel-header">
+                        <div class="manage-panel-icon"><i class="fas fa-database"></i></div>
+                        <span class="manage-panel-title">Your Data</span>
+                    </div>
+                    <div class="manage-panel-body">
+
+                        @* Download *@
+                        <div class="data-action-row">
+                            <div class="data-action-icon download"><i class="fas fa-download"></i></div>
+                            <div class="data-action-text">
+                                <div class="data-action-title">Download Personal Data</div>
+                                <div class="data-action-desc">
+                                    Download a copy of all personal data associated with your account,
+                                    including your profile, orders, and activity history.
+                                </div>
+                                <form method="post" asp-page-handler="DownloadPersonalData">
+                                    <button type="submit" class="mf-btn mf-btn-primary">
+                                        <i class="fas fa-download"></i> Download My Data
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        @* Delete *@
+                        <div class="data-action-row">
+                            <div class="data-action-icon delete"><i class="fas fa-trash-alt"></i></div>
+                            <div class="data-action-text">
+                                <div class="data-action-title">Delete Personal Data</div>
+                                <div class="data-action-desc">
+                                    Permanently delete all personal data from your account.
+                                    This action cannot be undone.
+                                </div>
+                                <div class="danger-zone">
+                                    <div class="danger-zone-title"><i class="fas fa-exclamation-triangle" style="font-size:10px;margin-right:4px;"></i>Danger Zone</div>
+                                    <form method="post" asp-page-handler="DeletePersonalData">
+                                        <button type="submit" class="mf-btn mf-btn-danger"
+                                                onclick="return confirm('This will permanently delete all your personal data. This cannot be undone. Are you sure?')">
+                                            <i class="fas fa-trash-alt"></i> Delete My Data
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+</div>

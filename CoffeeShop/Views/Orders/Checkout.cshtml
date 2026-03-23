@@ -1,0 +1,1054 @@
+﻿@using CoffeeShop.ViewModels
+@model CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #3b1f0e;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --warm-grey: #7a6a5a;
+    }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--foam);
+    }
+
+    /* ── BREADCRUMB ─────────────────────────────────────── */
+    .checkout-breadcrumb {
+        background: var(--espresso);
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .breadcrumb-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(245,237,224,0.35);
+        letter-spacing: 1px;
+    }
+
+        .breadcrumb-inner a {
+            color: rgba(245,237,224,0.35);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .breadcrumb-inner a:hover {
+                color: var(--latte);
+            }
+
+        .breadcrumb-inner .sep {
+            color: rgba(181,117,42,0.4);
+            font-size: 10px;
+        }
+
+        .breadcrumb-inner .current {
+            color: var(--latte);
+        }
+
+    /* ── PROGRESS STEPS ─────────────────────────────────── */
+    .checkout-progress {
+        background: white;
+        border-bottom: 1px solid rgba(181,117,42,0.1);
+        padding: 20px 0;
+    }
+
+    .progress-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: rgba(122,106,90,0.4);
+        font-weight: 500;
+    }
+
+        .step.active {
+            color: var(--espresso);
+        }
+
+        .step.done {
+            color: var(--caramel);
+        }
+
+    .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(122,106,90,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+        transition: all 0.3s;
+    }
+
+    .step.active .step-num {
+        background: var(--espresso);
+        border-color: var(--espresso);
+        color: var(--cream);
+    }
+
+    .step.done .step-num {
+        background: var(--caramel);
+        border-color: var(--caramel);
+        color: white;
+    }
+
+    .step-connector {
+        flex: 1;
+        height: 1px;
+        background: rgba(181,117,42,0.15);
+        margin: 0 16px;
+        min-width: 40px;
+    }
+
+    /* ── PAGE LAYOUT ────────────────────────────────────── */
+    .checkout-page {
+        padding: 56px 0 100px;
+    }
+
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    /* ── SECTION CARD ───────────────────────────────────── */
+    .co-card {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.1);
+        border-radius: 4px;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+
+    .co-card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 28px;
+        border-bottom: 1px solid rgba(181,117,42,0.08);
+    }
+
+    .co-card-icon {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(181,117,42,0.25);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--caramel);
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .co-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--espresso);
+    }
+
+    .co-card-body {
+        padding: 28px;
+    }
+
+    /* ── SAVED ADDRESSES ────────────────────────────────── */
+    .address-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .address-card {
+        border: 1px solid rgba(181,117,42,0.15);
+        border-radius: 4px;
+        padding: 18px 20px;
+        cursor: pointer;
+        transition: all 0.25s;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+        .address-card:hover {
+            border-color: var(--caramel);
+            box-shadow: 0 4px 16px rgba(181,117,42,0.1);
+        }
+
+        .address-card.selected {
+            border-color: var(--caramel);
+            background: rgba(181,117,42,0.04);
+        }
+
+    .address-radio {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--caramel);
+        flex-shrink: 0;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .address-card-content {
+        flex: 1;
+    }
+
+    .address-card-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--espresso);
+        margin-bottom: 4px;
+    }
+
+    .address-card-line {
+        font-size: 13px;
+        color: var(--warm-grey);
+        line-height: 1.6;
+    }
+
+    .address-default-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--espresso);
+        color: var(--latte);
+        padding: 3px 10px;
+        border-radius: 2px;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .btn-new-address {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px dashed rgba(181,117,42,0.3);
+        color: var(--caramel);
+        background: transparent;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+        transition: all 0.25s;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .btn-new-address:hover {
+            border-color: var(--caramel);
+            background: rgba(181,117,42,0.04);
+        }
+
+    /* ── FORM FIELDS ────────────────────────────────────── */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-grid-1 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .co-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .co-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--warm-grey);
+        font-weight: 500;
+    }
+
+    .co-input, .co-textarea {
+        background: var(--foam);
+        border: 1px solid rgba(181,117,42,0.18);
+        border-radius: 2px;
+        padding: 13px 16px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: var(--espresso);
+        outline: none;
+        transition: border-color 0.25s, box-shadow 0.25s;
+        width: 100%;
+    }
+
+        .co-input:focus, .co-textarea:focus {
+            border-color: var(--caramel);
+            box-shadow: 0 0 0 3px rgba(181,117,42,0.07);
+            background: white;
+        }
+
+        .co-input::placeholder, .co-textarea::placeholder {
+            color: rgba(122,106,90,0.4);
+        }
+
+    .co-textarea {
+        resize: vertical;
+        min-height: 88px;
+    }
+
+    .field-error {
+        font-size: 12px;
+        color: #c0392b;
+    }
+
+    .co-check-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--warm-grey);
+        cursor: pointer;
+    }
+
+    .co-check {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--caramel);
+        border-radius: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .form-section-gap {
+        margin-top: 20px;
+    }
+
+    /* ── PAYMENT ────────────────────────────────────────── */
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .payment-option {
+        border: 1px solid rgba(181,117,42,0.15);
+        border-radius: 4px;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+        .payment-option:hover {
+            border-color: var(--caramel);
+        }
+
+        .payment-option.selected {
+            border-color: var(--caramel);
+            background: rgba(181,117,42,0.03);
+        }
+
+    .payment-option-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .payment-radio {
+        width: 17px;
+        height: 17px;
+        accent-color: var(--caramel);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .payment-option-info {
+    }
+
+    .payment-option-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--espresso);
+        margin-bottom: 2px;
+    }
+
+    .payment-option-sub {
+        font-size: 12px;
+        color: var(--warm-grey);
+    }
+
+    .payment-icons {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .payment-icon-badge {
+        background: var(--foam);
+        border: 1px solid rgba(181,117,42,0.15);
+        border-radius: 3px;
+        padding: 3px 8px;
+        font-size: 11px;
+        color: var(--warm-grey);
+        font-weight: 500;
+    }
+
+    #stripePayment {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(181,117,42,0.1);
+    }
+
+    #card-element {
+        background: var(--foam);
+        border: 1px solid rgba(181,117,42,0.18);
+        border-radius: 2px;
+        padding: 14px 16px;
+        transition: border-color 0.25s;
+    }
+
+        #card-element.StripeElement--focus {
+            border-color: var(--caramel);
+        }
+
+    #card-errors {
+        color: #c0392b;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    /* ── ORDER SUMMARY SIDEBAR ──────────────────────────── */
+    .summary-panel {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.1);
+        border-radius: 4px;
+        position: sticky;
+        top: 24px;
+        overflow: hidden;
+    }
+
+    .summary-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid rgba(181,117,42,0.08);
+    }
+
+    .summary-eyebrow {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 4px;
+    }
+
+    .summary-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--espresso);
+    }
+
+    .summary-items {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(181,117,42,0.08);
+    }
+
+    .summary-item {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+        .summary-item + .summary-item {
+            border-top: 1px solid rgba(181,117,42,0.06);
+        }
+
+    .summary-item-img {
+        width: 52px;
+        height: 52px;
+        border-radius: 3px;
+        object-fit: contain;
+        background: var(--foam);
+        border: 1px solid rgba(181,117,42,0.1);
+        flex-shrink: 0;
+        padding: 4px;
+    }
+
+    .summary-item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .summary-item-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--espresso);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 3px;
+    }
+
+    .summary-item-qty {
+        font-size: 12px;
+        color: var(--warm-grey);
+    }
+
+    .summary-item-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--caramel);
+        white-space: nowrap;
+    }
+
+    .summary-totals {
+        padding: 20px 24px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--warm-grey);
+        margin-bottom: 10px;
+    }
+
+        .total-row.grand {
+            padding-top: 14px;
+            border-top: 1px solid rgba(181,117,42,0.12);
+            margin-top: 4px;
+            margin-bottom: 0;
+        }
+
+            .total-row.grand .label {
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--espresso);
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .total-row.grand .amount {
+                font-family: 'Playfair Display', serif;
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--caramel);
+                line-height: 1;
+            }
+
+    .summary-cta {
+        padding: 20px 24px;
+        border-top: 1px solid rgba(181,117,42,0.08);
+    }
+
+    .btn-place-order {
+        width: 100%;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 17px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .btn-place-order:hover {
+            background: var(--caramel);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(181,117,42,0.3);
+        }
+
+    .secure-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-size: 11px;
+        color: rgba(122,106,90,0.5);
+        letter-spacing: 0.5px;
+        margin-top: 14px;
+    }
+
+        .secure-note i {
+            color: rgba(181,117,42,0.5);
+        }
+
+    /* ── RESPONSIVE ─────────────────────────────────────── */
+    @@media (max-width: 900px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-panel {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 580px) {
+        .form-grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .co-card-body {
+            padding: 20px;
+        }
+    }
+</style>
+
+<!-- Breadcrumb -->
+<div class="checkout-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-inner">
+            <a href="/">Home</a>
+            <span class="sep"><i class="fas fa-chevron-right"></i></span>
+            <a href="/Products/Shop">Shop</a>
+            <span class="sep"><i class="fas fa-chevron-right"></i></span>
+            <span class="current">Checkout</span>
+        </div>
+    </div>
+</div>
+
+<!-- Progress -->
+<div class="checkout-progress">
+    <div class="progress-steps">
+        <div class="step done">
+            <div class="step-num"><i class="fas fa-check" style="font-size:10px;"></i></div>
+            <span>Cart</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step active">
+            <div class="step-num">2</div>
+            <span>Checkout</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <span>Confirmation</span>
+        </div>
+    </div>
+</div>
+
+<!-- Page -->
+<div class="checkout-page">
+    <div class="container">
+        <form asp-action="Checkout" method="post" id="payment-form">
+            <div class="checkout-grid">
+                <input type="hidden" name="CartTotal" value="@Model.CartTotal" />
+                <input type="hidden" id="useNewAddress" name="useNewAddress" value="false">
+
+                <!-- ── LEFT COLUMN ── -->
+                <div>
+                    <!-- Billing Details -->
+                    <div class="co-card">
+                        <div class="co-card-header">
+                            <div class="co-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <span class="co-card-title">Billing Details</span>
+                        </div>
+                        <div class="co-card-body">
+
+                            @if (Model.SavedAddresses?.Any() == true)
+                            {
+                                <div class="address-grid">
+                                    @foreach (var address in Model.SavedAddresses)
+                                    {
+                                        <div class="address-card @(address.IsDefault ? "selected" : "")" onclick="selectSavedAddress(@address.AddressID, this)">
+                                            @if (address.IsDefault)
+                                            {
+                                                <span class="address-default-badge">Default</span>
+                                            }
+                                            <input class="address-radio saved-address-radio" type="radio" name="SelectedAddressId"
+                                                   value="@address.AddressID" id="address@(address.AddressID)"
+                                                   @(address.IsDefault ? "checked" : "")
+                                                   onchange="toggleAddressFields(true)">
+                                            <div class="address-card-content">
+                                                <div class="address-card-name">@address.FirstName @address.LastName</div>
+                                                <div class="address-card-line">
+                                                    @address.StreetAddress<br>
+                                                    @address.City, @address.PostalCode — @address.Country<br>
+                                                    @address.Phone
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <button type="button" class="btn-new-address" onclick="toggleNewAddressForm()">
+                                    <i class="fas fa-plus"></i> Use a Different Address
+                                </button>
+                            }
+
+                            <!-- New Address Form -->
+                            <div id="newAddressForm" style="display: @(Model.SavedAddresses?.Any() == true ? "none" : "block")">
+                                <div class="form-grid-1" style="margin-bottom:16px;">
+                                    <div class="co-field">
+                                        <label asp-for="Email" class="form-label">
+                                            Email
+                                            @if (User.Identity?.IsAuthenticated == true)
+                                            {
+                                                <span class="text-muted">(from your account)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">*</span>
+                                            }
+                                        </label>
+                                        @if (User.Identity?.IsAuthenticated == true)
+                                        {
+                                            <!-- For logged-in users: show email as readonly -->
+                                            <input asp-for="Email" class="form-control" type="email" readonly
+                                                   style="background-color: #f8f9fa; cursor: not-allowed;">
+                                            <small class="text-muted">
+                                                <i class="fas fa-lock me-1"></i> Using email from your account
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <!-- For guest users: email is required -->
+                                            <input asp-for="Email" class="form-control address-field" type="email" required>
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        }
+                                        
+                                    </div>
+                                </div>
+                                <div class="form-grid-2" style="margin-bottom:16px;">
+                                    <div class="co-field">
+                                        <label asp-for="FirstName" class="co-label">First Name *</label>
+                                        <input asp-for="FirstName" class="co-input address-field" placeholder="John">
+                                        <span asp-validation-for="FirstName" class="field-error"></span>
+                                    </div>
+                                    <div class="co-field">
+                                        <label asp-for="LastName" class="co-label">Last Name *</label>
+                                        <input asp-for="LastName" class="co-input address-field" placeholder="Doe">
+                                        <span asp-validation-for="LastName" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <div class="form-grid-2" style="margin-bottom:16px;">
+                                    <div class="co-field">
+                                        <label asp-for="Phone" class="co-label">Phone *</label>
+                                        <input asp-for="Phone" class="co-input address-field" type="tel" placeholder="+389 XX XXX XXX">
+                                        <span asp-validation-for="Phone" class="field-error"></span>
+                                    </div>
+                                    <div class="co-field">
+                                        <label asp-for="City" class="co-label">City *</label>
+                                        <input asp-for="City" class="co-input address-field" placeholder="Kumanovo">
+                                        <span asp-validation-for="City" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <div class="form-grid-1" style="margin-bottom:16px;">
+                                    <div class="co-field">
+                                        <label asp-for="Address" class="co-label">Street Address *</label>
+                                        <input asp-for="Address" class="co-input address-field" placeholder="123 Coffee Street">
+                                        <span asp-validation-for="Address" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <div class="form-grid-2" style="margin-bottom:20px;">
+                                    <div class="co-field">
+                                        <label asp-for="PostalCode" class="co-label">Postal Code</label>
+                                        <input asp-for="PostalCode" class="co-input address-field" placeholder="1300">
+                                        <span asp-validation-for="PostalCode" class="field-error"></span>
+                                    </div>
+                                    <div class="co-field">
+                                        <label asp-for="Country" class="co-label">Country *</label>
+                                        <input asp-for="Country" class="co-input address-field" placeholder="North Macedonia">
+                                        <span asp-validation-for="Country" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <label class="co-check-label">
+                                    <input class="co-check" type="checkbox" asp-for="SaveAddress">
+                                    Save this address for future orders
+                                </label>
+                            </div>
+
+                            <!-- Order Notes -->
+                            <div class="co-field form-section-gap">
+                                <label asp-for="Notes" class="co-label">Order Notes <span style="opacity:.5;font-size:9px;">Optional</span></label>
+                                <textarea asp-for="Notes" class="co-textarea" placeholder="Special delivery instructions, gate codes, etc."></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="co-card">
+                        <div class="co-card-header">
+                            <div class="co-card-icon"><i class="fas fa-credit-card"></i></div>
+                            <span class="co-card-title">Payment Method</span>
+                        </div>
+                        <div class="co-card-body">
+                            <div class="payment-options">
+
+                                <div class="payment-option selected" id="opt-stripe" onclick="selectPayment('Stripe', this)">
+                                    <div class="payment-option-header">
+                                        <input class="payment-radio" type="radio" name="PaymentMethod" id="stripe" value="Stripe" checked onchange="togglePaymentFields()">
+                                        <div class="payment-option-info">
+                                            <div class="payment-option-title">Credit / Debit Card</div>
+                                            <div class="payment-option-sub">Secured by Stripe — all major cards accepted</div>
+                                        </div>
+                                        <div class="payment-icons">
+                                            <span class="payment-icon-badge">VISA</span>
+                                            <span class="payment-icon-badge">MC</span>
+                                        </div>
+                                    </div>
+                                    <div id="stripePayment">
+                                        <div id="card-element"></div>
+                                        <div id="card-errors" role="alert"></div>
+                                    </div>
+                                </div>
+
+                                <div class="payment-option" id="opt-cash" onclick="selectPayment('Cash', this)">
+                                    <div class="payment-option-header">
+                                        <input class="payment-radio" type="radio" name="PaymentMethod" id="cash" value="Cash" onchange="togglePaymentFields()">
+                                        <div class="payment-option-info">
+                                            <div class="payment-option-title">Cash on Delivery</div>
+                                            <div class="payment-option-sub">Pay in cash when your order arrives</div>
+                                        </div>
+                                        <div class="payment-icons">
+                                            <span class="payment-icon-badge" style="font-size:14px;">💵</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── RIGHT COLUMN — ORDER SUMMARY ── -->
+                <div class="summary-panel">
+                    <div class="summary-header">
+                        <div class="summary-eyebrow">Your Order</div>
+                        <div class="summary-title">Order Summary</div>
+                    </div>
+
+                    <div class="summary-items">
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <div class="summary-item">
+                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="summary-item-img">
+                                <div class="summary-item-info">
+                                    <div class="summary-item-name">@item.Product.Name</div>
+                                    <div class="summary-item-qty">Qty: @item.Qty</div>
+                                </div>
+                                <div class="summary-item-price">$@((item.Product.Price * item.Qty).ToString("0.00"))</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="summary-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span>$@Model.CartTotal.ToString("0.00")</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Shipping</span>
+                            <span style="color:#2e7d32; font-size:12px; font-weight:500;">FREE</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span class="label">Total</span>
+                            <span class="amount">$@Model.CartTotal.ToString("0.00")</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-cta">
+                        <button type="submit" class="btn-place-order" id="submit-button">
+                            <i class="fas fa-lock"></i> Place Order Securely
+                        </button>
+                        <div class="secure-note">
+                            <i class="fas fa-shield-alt"></i>
+                            Your payment info is always encrypted
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <input type="hidden" id="useNewAddress" name="useNewAddress" value="false">
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripeKey = '@Model.StripePublishableKey';
+        var stripe = stripeKey ? Stripe(stripeKey) : null;
+        var cardElement = null;
+        console.log("Stripe key:", '@Model.StripePublishableKey');
+        if (stripe) {
+            var elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '14px',
+                        color: '#1c0f08',
+                        fontFamily: '"DM Sans", sans-serif',
+                        '::placeholder': { color: '#a89880' }
+                    },
+                    invalid: { color: '#c0392b' }
+                }
+            });
+            cardElement.mount('#card-element');
+            cardElement.on('change', function(event) {
+                document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+            });
+        }
+
+        function selectPayment(method, el) {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById(method === 'Stripe' ? 'stripe' : 'cash').checked = true;
+            togglePaymentFields();
+        }
+
+        function togglePaymentFields() {
+            var isStripe = document.getElementById('stripe').checked;
+            document.getElementById('stripePayment').style.display = isStripe ? 'block' : 'none';
+        }
+
+        function toggleNewAddressForm() {
+            var form = document.getElementById('newAddressForm');
+            var isHidden = form.style.display === 'none';
+            form.style.display = isHidden ? 'block' : 'none';
+            document.querySelectorAll('.saved-address-radio').forEach(r => r.checked = false);
+            document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+            toggleAddressFields(!isHidden);
+            document.getElementById('useNewAddress').value = isHidden ? 'true' : 'false';
+        }
+
+        function selectSavedAddress(addressId, element) {
+            document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('address' + addressId).checked = true;
+            document.getElementById('newAddressForm').style.display = 'none';
+            toggleAddressFields(true);
+            document.getElementById('useNewAddress').value = 'false';
+        }
+
+             function toggleAddressFields(usingSavedAddress) {
+            var addressFields = document.querySelectorAll('.address-field');
+
+            addressFields.forEach(field => {
+                if (field.name === 'Email') {
+                    return;
+                }
+
+                if (usingSavedAddress) {
+                    field.removeAttribute('required');
+                    field.removeAttribute('data-val-required');
+                } else {
+                    field.setAttribute('required', 'required');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var saved = document.querySelector('.saved-address-radio:checked');
+            if (saved) {
+                toggleAddressFields(true);
+                var card = saved.closest('.address-card');
+                if (card) card.classList.add('selected');
+            } else {
+                toggleAddressFields(false);
+            }
+            togglePaymentFields();
+        });
+
+                document.getElementById('payment-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            var submitBtn = document.getElementById('submit-button');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            var paymentMethod = document.querySelector('input[name="PaymentMethod"]:checked').value;
+            var usingSaved = document.querySelector('.saved-address-radio:checked') !== null;
+
+            if (!usingSaved) {
+                var valid = true;
+                document.querySelectorAll('.address-field').forEach(field => {
+                    if (field.hasAttribute('required') && !field.value.trim()) {
+                        valid = false;
+                        field.style.borderColor = '#c0392b';
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                if (!valid) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Place Order Securely';
+                    return;
+                }
+            }
+
+            if (paymentMethod === 'Stripe' && stripe && cardElement) {
+                const {token, error} = await stripe.createToken(cardElement);
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Place Order Securely';
+                } else {
+                    // Remove any existing StripeToken input to avoid duplicates
+                    var existing = document.querySelector('input[name="StripeToken"]');
+                    if (existing) existing.remove();
+
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'StripeToken';
+                    input.value = token.id;
+                    this.appendChild(input);
+                    this.submit();
+                }
+            } else {
+                this.submit();
+            }
+        });
+    </script>
+}

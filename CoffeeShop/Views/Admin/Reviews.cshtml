@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Review>
+@{
+    ViewData["Title"] = "Manage Reviews";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Manage</div>
+        <h1 class="page-title">Customer <em>Reviews</em></h1>
+    </div>
+    <a href="/Admin/Dashboard" class="btn-cta btn-cta-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="admin-alert success">
+        <i class="fas fa-check-circle"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <div class="panel-icon"><i class="fas fa-star"></i></div>
+            <span class="panel-title">All Reviews</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <span class="status-badge pending">@(Model?.Count(r => !r.IsApproved) ?? 0) pending</span>
+            <span class="status-badge approved">@(Model?.Count(r => r.IsApproved) ?? 0) approved</span>
+        </div>
+    </div>
+    <div class="panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Reviewer</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var review in Model)
+                        {
+                            <tr>
+                                <td><strong>@review.Product?.Name</strong></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:9px;">
+                                        <div style="width:30px;height:30px;border-radius:50%;background:var(--espresso);color:var(--latte);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:13px;font-weight:700;flex-shrink:0;">@review.UserName.Substring(0, 1).ToUpper()</div>
+                                        <span>@review.UserName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:2px;">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="@(i <= review.Rating ? "fas" : "far") fa-star" style="font-size:11px;color:var(--caramel);"></i>
+                                        }
+                                    </div>
+                                    <span style="font-size:11px;color:var(--muted);">@review.Rating / 5</span>
+                                </td>
+                                <td style="max-width:200px;">
+                                    @if (!string.IsNullOrEmpty(review.Comment))
+                                    {
+                                        <span style="font-size:13px;color:var(--muted);font-style:italic;">
+                                            @(review.Comment.Length > 60 ? review.Comment.Substring(0, 60) + "…" : review.Comment)
+                                        </span>
+                                    }
+                                    else
+                                    {
+
+                                        <span style="color:rgba(122,106,90,0.4);font-size:12px;">No comment</span>
+                                    }
+                                </td>
+                                <td style="font-size:12px;color:var(--muted);white-space:nowrap;">@review.ReviewDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <span class="status-badge @(review.IsApproved ? "approved" : "review-pending")">
+                                        @(review.IsApproved ? "Approved" : "Pending")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px;">
+                                        @if (!review.IsApproved)
+                                        {
+                                            <form asp-action="ApproveReview" method="post" style="margin:0;">
+                                                <input type="hidden" name="reviewId" value="@review.ReviewID" />
+                                                <button type="submit" class="action-btn action-btn-success">Approve</button>
+                                            </form>
+                                        }
+                                        <form asp-action="DeleteReview" method="post" style="margin:0;">
+                                            <input type="hidden" name="reviewId" value="@review.ReviewID" />
+                                            <button type="submit" class="action-btn action-btn-danger" onclick="return confirm('Delete this review?')">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state"><i class="fas fa-star"></i><p>No reviews found.</p></div>
+        }
+    </div>
+</div>

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Order History";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="ud-page-header">
+    <div class="ud-eyebrow">Account</div>
+    <h1 class="ud-title">My <em>Orders</em></h1>
+</div>
+
+<div class="ud-panel">
+    <div class="ud-panel-header">
+        <div class="ud-panel-title-grp">
+            <div class="ud-panel-icon"><i class="fas fa-receipt"></i></div>
+            <span class="ud-panel-title">Order History</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">@(Model?.Count() ?? 0) orders</span>
+    </div>
+    <div class="ud-panel-body-flush">
+        @if (Model?.Any() == true)
+        {
+            <table class="ud-table">
+                <thead>
+                    <tr><th>Order #</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        var cls = order.OrderStatus?.ToLower() switch
+                        {
+                                        "completed" => "completed",
+                                        "pending" => "pending",
+                                        "processing" => "processing",
+                                        "shipped" => "shipped",
+                                        "delivered" => "delivered",
+                                        _ => "cancelled"
+                        };
+                        <tr>
+                            <td><strong style="color:var(--caramel);">#@order.OrderID</strong></td>
+                            <td style="font-size:12px;color:var(--muted);">@order.OrderPlaced.ToString("MMM dd, yyyy")</td>
+                            <td style="color:var(--muted);">@(order.OrderDetails?.Count() ?? 0) items</td>
+                            <td><strong>$@order.OrderTotal.ToString("0.00")</strong></td>
+                            <td><span class="s-badge @cls">@order.OrderStatus</span></td>
+                            <td><a asp-action="OrderDetails" asp-route-id="@order.OrderID" class="u-btn u-btn-primary u-btn-sm">View Details</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="u-empty">
+                <i class="fas fa-receipt"></i>
+                <p>You haven't placed any orders yet.</p>
+                <a asp-controller="Products" asp-action="Shop" class="u-btn u-btn-primary">Start Shopping</a>
+            </div>
+        }
+    </div>
+</div>

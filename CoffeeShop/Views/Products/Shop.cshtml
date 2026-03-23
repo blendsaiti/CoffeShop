@@ -1,0 +1,851 @@
+﻿@using CoffeeShop.ViewModels
+@model ProductListViewModel
+
+<style>
+    :root {
+        --espresso: #1c0f08;
+        --roast: #3b1f0e;
+        --caramel: #b5752a;
+        --latte: #d4a96a;
+        --cream: #f5ede0;
+        --foam: #faf6f0;
+        --charcoal: #2a2018;
+        --warm-grey: #7a6a5a;
+    }
+
+    /* ── SHOP HERO ─────────────────────────────────────────────────── */
+    .shop-hero {
+        position: relative;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .shop-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1580933073521-dc49ac0d4e6a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        transform: scale(1.05);
+        transition: transform 8s ease;
+    }
+
+    .shop-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(28,15,8,0.5) 0%, rgba(28,15,8,0.75) 60%, rgba(28,15,8,0.95) 100%);
+    }
+
+    .shop-hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+
+    .shop-hero-eyebrow {
+        font-size: 10px;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--latte);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+        .shop-hero-eyebrow::before,
+        .shop-hero-eyebrow::after {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--latte);
+        }
+
+    .shop-hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(52px, 7vw, 96px);
+        font-weight: 900;
+        color: var(--cream);
+        line-height: 1;
+        margin-bottom: 20px;
+    }
+
+        .shop-hero h1 em {
+            font-style: italic;
+            color: var(--latte);
+        }
+
+    .shop-hero-sub {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 20px;
+        font-weight: 300;
+        font-style: italic;
+        color: rgba(245,237,224,0.65);
+        letter-spacing: 0.5px;
+    }
+
+    /* Breadcrumb */
+    .shop-breadcrumb {
+        background: var(--espresso);
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.12);
+    }
+
+    .breadcrumb-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(245,237,224,0.35);
+        letter-spacing: 1px;
+    }
+
+        .breadcrumb-inner a {
+            color: rgba(245,237,224,0.35);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .breadcrumb-inner a:hover {
+                color: var(--latte);
+            }
+
+        .breadcrumb-inner .sep {
+            color: rgba(181,117,42,0.4);
+            font-size: 10px;
+        }
+
+        .breadcrumb-inner .current {
+            color: var(--latte);
+        }
+
+    /* ── SHOP BODY ─────────────────────────────────────────────────── */
+    .shop-body {
+        background: var(--foam);
+        padding: 80px 0 100px;
+    }
+
+    .shop-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid rgba(181,117,42,0.15);
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .shop-toolbar-left .section-label {
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .shop-toolbar-left .section-label::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: var(--caramel);
+        }
+
+    .shop-toolbar-left h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--espresso);
+        line-height: 1.1;
+    }
+
+        .shop-toolbar-left h2 em {
+            font-style: italic;
+            color: var(--caramel);
+        }
+
+    .admin-create-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 13px 28px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 0.25s, transform 0.25s;
+        cursor: pointer;
+    }
+
+        .admin-create-btn:hover {
+            background: var(--caramel);
+            color: var(--cream);
+            transform: translateY(-2px);
+        }
+
+    .filters-bar {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.12);
+        border-radius: 4px;
+        padding: 24px;
+        margin-bottom: 32px;
+    }
+
+    .filters-row {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .filter-group label {
+        display: block;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid rgba(181,117,42,0.2);
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        color: var(--espresso);
+        background: var(--foam);
+        transition: border-color 0.2s;
+    }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--caramel);
+        }
+
+    .price-range {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 12px 24px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+        .filter-btn:hover {
+            background: var(--caramel);
+        }
+
+    .clear-btn {
+        padding: 12px 24px;
+        background: transparent;
+        color: var(--warm-grey);
+        border: 1px solid rgba(181,117,42,0.2);
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.25s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .clear-btn:hover {
+            border-color: var(--caramel);
+            color: var(--caramel);
+        }
+
+    /* Results info */
+    .results-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid rgba(181,117,42,0.12);
+        border-radius: 2px;
+    }
+
+    .results-text {
+        font-size: 13px;
+        color: var(--warm-grey);
+    }
+
+        .results-text strong {
+            color: var(--espresso);
+            font-weight: 600;
+        }
+
+    .sort-select {
+        padding: 8px 32px 8px 12px;
+        border: 1px solid rgba(181,117,42,0.2);
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        color: var(--espresso);
+        background: var(--foam) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b5752a' d='M6 9L1 4h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    /* ── PRODUCT GRID ──────────────────────────────────────────────── */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        min-height: 400px;
+    }
+
+    .product-card {
+        background: white;
+        border: 1px solid rgba(181,117,42,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.35s, transform 0.35s;
+        position: relative;
+    }
+
+        .product-card:hover {
+            box-shadow: 0 28px 60px rgba(28,15,8,0.13);
+            transform: translateY(-6px);
+        }
+
+    .product-img-wrap {
+        height: 260px;
+        background: var(--foam);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .product-img-wrap img {
+            max-width: 78%;
+            max-height: 78%;
+            object-fit: contain;
+            transition: transform 0.4s;
+        }
+
+    .product-card:hover .product-img-wrap img {
+        transform: scale(1.08);
+    }
+
+    .product-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(28,15,8,0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .overlay-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--cream);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--espresso);
+        font-size: 15px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+
+        .overlay-btn:hover {
+            background: var(--caramel);
+            color: white;
+            transform: scale(1.12);
+        }
+
+        .overlay-btn.danger:hover {
+            background: #c0392b;
+        }
+
+    .product-info {
+        padding: 22px 22px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid rgba(181,117,42,0.08);
+    }
+
+    .product-cat {
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 8px;
+    }
+
+    .product-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--espresso);
+        margin-bottom: 12px;
+        line-height: 1.3;
+        flex: 1;
+    }
+
+        .product-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .product-name a:hover {
+                color: var(--caramel);
+            }
+
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(181,117,42,0.08);
+        gap: 10px;
+    }
+
+    .product-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--caramel);
+        line-height: 1;
+    }
+
+    .cart-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--espresso);
+        color: var(--cream);
+        border: none;
+        padding: 11px 20px;
+        border-radius: 2px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.25s;
+        white-space: nowrap;
+    }
+
+        .cart-btn:hover {
+            background: var(--caramel);
+            color: white;
+        }
+
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+        padding: 0 22px 18px;
+    }
+
+    .btn-edit {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: transparent;
+        border: 1px solid rgba(181,117,42,0.3);
+        color: var(--caramel);
+        padding: 9px 16px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+    }
+
+        .btn-edit:hover {
+            background: var(--caramel);
+            border-color: var(--caramel);
+            color: white;
+        }
+
+    .btn-delete {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: transparent;
+        border: 1px solid rgba(192,57,43,0.3);
+        color: #c0392b;
+        padding: 9px 16px;
+        border-radius: 2px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+        width: 100%;
+    }
+
+        .btn-delete:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+            color: white;
+        }
+
+    .pagination-wrapper {
+        margin-top: 48px;
+        padding-top: 32px;
+        border-top: 1px solid rgba(181,117,42,0.15);
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .page-item {
+        display: inline-block;
+    }
+
+    .page-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        background: white;
+        border: 1px solid rgba(181,117,42,0.2);
+        color: var(--espresso);
+        text-decoration: none;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 2px;
+        transition: all 0.2s;
+    }
+
+        .page-link:hover {
+            background: var(--caramel);
+            border-color: var(--caramel);
+            color: white;
+        }
+
+    .page-item.active .page-link {
+        background: var(--caramel);
+        border-color: var(--caramel);
+        color: white;
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+
+    /* Empty state */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 80px 0;
+    }
+
+        .empty-state i {
+            font-size: 56px;
+            color: rgba(181,117,42,0.25);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-style: italic;
+            color: var(--warm-grey);
+        }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @@media (max-width: 1024px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filters-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .shop-hero {
+            height: 280px;
+        }
+
+        .shop-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<section class="shop-body">
+    <div class="container">
+
+        <div class="shop-toolbar">
+            <div class="shop-toolbar-left">
+                <div class="section-label">Browse All</div>
+                <h2>Our <em>Products</em></h2>
+            </div>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Products" asp-action="Create" class="admin-create-btn">
+                    <i class="fas fa-plus"></i> New Product
+                </a>
+            }
+        </div>
+
+        <form id="shopFiltersForm" asp-action="Shop" method="get">
+            <input type="hidden" name="page" id="pageInput" value="@Model.CurrentPage" />
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+
+            <div class="filters-bar">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="searchTerm">Search</label>
+                        <input type="text"
+                               id="searchTerm"
+                               name="searchTerm"
+                               class="filter-input"
+                               placeholder="Search products..."
+                               value="@Model.SearchTerm" />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="categoryId">Category</label>
+                        <select id="categoryId" name="categoryId" class="filter-input">
+                            <option value="">All Categories</option>
+                            @if (Model.Categories != null)
+                            {
+                                foreach (var category in Model.Categories)
+                                {
+                                    if (Model.SelectedCategoryId == category.CategoryID)
+                                    {
+                                        <option value="@category.CategoryID" selected>@category.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@category.CategoryID">@category.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Price Range</label>
+                        <div class="price-range">
+                            <input type="number"
+                                   id="minPrice"
+                                   name="minPrice"
+                                   class="filter-input"
+                                   placeholder="Min"
+                                   step="0.01"
+                                   value="@Model.MinPrice" />
+                            <input type="number"
+                                   id="maxPrice"
+                                   name="maxPrice"
+                                   class="filter-input"
+                                   placeholder="Max"
+                                   step="0.01"
+                                   value="@Model.MaxPrice" />
+                        </div>
+                    </div>
+
+                    <div class="filter-group" style="display:flex; gap:8px;">
+                       
+                        <a asp-action="Shop" class="clear-btn">Clear</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
+                <select id="sortBy" name="sortBy" class="sort-select">
+                    <option value="">Sort by: Default</option>
+                    <option value="name_asc" selected="@(Model.SortBy == "name_asc")">Name: A to Z</option>
+                    <option value="name_desc" selected="@(Model.SortBy == "name_desc")">Name: Z to A</option>
+                    <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Price: Low to High</option>
+                    <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Price: High to Low</option>
+                    <option value="newest" selected="@(Model.SortBy == "newest")">Newest First</option>
+                </select>
+            </div>
+        </form>
+
+        @Html.AntiForgeryToken()
+
+        <div id="shopResults">
+            @await Html.PartialAsync("_ShopResultsPartial", Model)
+        </div>
+
+    </div>
+</section>
+
+<script>
+
+              async function addToCart(productId, btn) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        const res = await fetch('/ShoppingCart/AddToShoppingCart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `productId=${productId}&__RequestVerificationToken=${encodeURIComponent(token)}`
+        });
+
+        if (res.ok) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            setTimeout(() => btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add', 1500);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("shopFiltersForm");
+        const resultsContainer = document.getElementById("shopResults");
+        const searchInput = document.getElementById("searchTerm");
+        const categorySelect = document.getElementById("categoryId");
+        const sortSelect = document.getElementById("sortBy");
+        const minPriceInput = document.getElementById("minPrice");
+        const maxPriceInput = document.getElementById("maxPrice");
+        const pageInput = document.getElementById("pageInput");
+
+        let debounceTimer;
+
+        async function loadResults(resetPage = false) {
+            if (resetPage) {
+                pageInput.value = 1;
+            }
+
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+            const url = `${form.action}?${queryString}`;
+
+            try {
+                resultsContainer.style.opacity = "0.6";
+
+                const response = await fetch(url, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to load products.");
+                }
+
+                const html = await response.text();
+                resultsContainer.innerHTML = html;
+
+                window.history.replaceState({}, "", url);
+                bindPagination();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                resultsContainer.style.opacity = "1";
+            }
+        }
+
+        function debounceLoad() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => loadResults(true), 400);
+        }
+        
+        function bindPagination() {
+            document.querySelectorAll(".ajax-page-link").forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    const page = this.dataset.page;
+                    if (!page) return;
+
+                    pageInput.value = page;
+                    loadResults(false);
+                });
+            });
+        }
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            loadResults(true);
+        });
+
+        searchInput.addEventListener("input", debounceLoad);
+        categorySelect.addEventListener("change", () => loadResults(true));
+        sortSelect.addEventListener("change", () => loadResults(true));
+        minPriceInput.addEventListener("input", debounceLoad);
+        maxPriceInput.addEventListener("input", debounceLoad);
+
+        bindPagination();
+    });
+</script>

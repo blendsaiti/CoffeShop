@@ -1,0 +1,935 @@
+﻿@inject IHttpContextAccessor HttpContextAcessor
+@{
+    var cartCount = HttpContextAcessor?.HttpContext?.Session.GetInt32("cartCount") ?? 0;
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var userInitial = User.Identity.Name?.Substring(0, 1).ToUpper() ?? "?";
+    var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <link rel="shortcut icon" href="~/images/coffee-icon-sign-symbol-design-free-png.webp" type="image/x-icon">
+    <title>@ViewData["Title"] — Coffee Shop</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css">
+
+    <style>
+        :root {
+            --espresso: #1c0f08;
+            --caramel: #b5752a;
+            --latte: #d4a96a;
+            --cream: #f5ede0;
+            --foam: #faf6f0;
+            --bg: #f2ede8;
+            --surface: #ffffff;
+            --border: rgba(181,117,42,0.13);
+            --muted: #7a6a5a;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--espresso);
+            overflow-x: hidden;
+        }
+
+        /* ══════════════════════════════════════
+                   NAVBAR  — identical CSS to _Layout
+                ══════════════════════════════════════ */
+        .site-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(250,246,240,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: 68px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            text-decoration: none;
+        }
+
+            .nav-brand img {
+                height: 38px;
+            }
+
+        .nav-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .nav-links > li > a {
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                letter-spacing: 0.4px;
+                color: var(--espresso);
+                text-decoration: none;
+                padding: 8px 13px;
+                display: block;
+                border-bottom: 2px solid transparent;
+                transition: color 0.2s, border-color 0.2s;
+            }
+
+                .nav-links > li > a:hover,
+                .nav-links > li > a.active {
+                    color: var(--caramel);
+                    border-bottom-color: var(--caramel);
+                }
+
+            /* _LoginPartial outputs <ul class="navbar-nav"> — override Bootstrap to sit inline */
+            .nav-links .navbar-nav {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+                .nav-links .navbar-nav .nav-link {
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: var(--espresso) !important;
+                    padding: 8px 13px;
+                    border-bottom: 2px solid transparent;
+                    transition: color 0.2s, border-color 0.2s;
+                    display: flex;
+                    align-items: center;
+                }
+
+                    .nav-links .navbar-nav .nav-link:hover {
+                        color: var(--caramel) !important;
+                        border-bottom-color: var(--caramel);
+                    }
+
+            .nav-links .dropdown-menu {
+                border: 1px solid var(--border) !important;
+                border-radius: 3px !important;
+                box-shadow: 0 8px 24px rgba(28,15,8,0.10) !important;
+                background: var(--foam) !important;
+                padding: 6px 0 !important;
+                min-width: 130px;
+                margin-top: 6px !important;
+            }
+
+            .nav-links .dropdown-item {
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--espresso) !important;
+                padding: 9px 16px;
+                transition: background 0.15s, color 0.15s;
+            }
+
+                .nav-links .dropdown-item:hover {
+                    background: var(--cream) !important;
+                    color: var(--caramel) !important;
+                }
+
+        /* Login link styled as a button pill */
+        .nav-login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: 1.5px solid rgba(181,117,42,0.35);
+            color: var(--caramel) !important;
+            padding: 7px 16px !important;
+            border-radius: 2px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px !important;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin: 0 4px;
+        }
+
+            .nav-login-btn:hover {
+                background: var(--caramel) !important;
+                color: white !important;
+                border-color: var(--caramel);
+            }
+
+        /* Cart pill */
+        .nav-cart-link {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--espresso);
+            color: var(--cream) !important;
+            padding: 9px 18px;
+            border-bottom: none !important;
+            border-radius: 2px;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+
+            .nav-cart-link:hover {
+                background: var(--caramel) !important;
+                color: white !important;
+            }
+
+        .cart-badge {
+            background: var(--caramel);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Hamburger */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+            .nav-toggle span {
+                display: block;
+                width: 22px;
+                height: 2px;
+                background: var(--espresso);
+                margin: 5px 0;
+                border-radius: 1px;
+            }
+
+        @@media (max-width: 900px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            #navLinks {
+                display: none !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0 !important;
+                position: absolute;
+                top: 68px;
+                left: 0;
+                right: 0;
+                background: var(--foam);
+                border-bottom: 1px solid var(--border);
+                padding: 12px 20px 16px;
+                box-shadow: 0 8px 24px rgba(28,15,8,0.08);
+            }
+
+                #navLinks.open {
+                    display: flex !important;
+                }
+
+            .nav-links > li, .nav-links .navbar-nav {
+                width: 100%;
+            }
+
+                .nav-links > li > a {
+                    padding: 11px 0;
+                    border-bottom: 1px solid rgba(181,117,42,0.08) !important;
+                }
+        }
+
+        /* ══════════════════════════════════════
+                   DASHBOARD LAYOUT
+                   Fixed nav at top, then sidebar + main
+                ══════════════════════════════════════ */
+        .dash-page {
+            padding-top: 68px;
+            min-height: 100vh;
+        }
+
+        .dash-body {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 32px 32px 64px;
+            display: grid;
+            grid-template-columns: 210px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @@media (max-width: 860px) {
+            .dash-body {
+                grid-template-columns: 1fr;
+                padding: 16px 16px 48px;
+            }
+
+            .dash-sidebar {
+                position: static !important;
+            }
+        }
+
+        /* ── Sidebar card ── */
+        .dash-sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            position: sticky;
+            top: 84px;
+        }
+
+        /* User info strip */
+        .dash-profile {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .dash-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--espresso);
+            border: 1.5px solid rgba(181,117,42,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--latte);
+            margin: 0 auto 10px;
+        }
+
+        .dash-username {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--espresso);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dash-useremail {
+            font-size: 11px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Sidebar nav */
+        .dash-nav {
+            padding: 8px 0;
+        }
+
+            .dash-nav a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 16px;
+                text-decoration: none;
+                color: var(--muted);
+                font-size: 13px;
+                border-left: 2px solid transparent;
+                transition: all 0.15s;
+            }
+
+                .dash-nav a i {
+                    width: 15px;
+                    font-size: 12px;
+                    text-align: center;
+                    flex-shrink: 0;
+                }
+
+                .dash-nav a:hover {
+                    color: var(--caramel);
+                    background: rgba(181,117,42,0.04);
+                    border-left-color: rgba(181,117,42,0.25);
+                }
+
+                .dash-nav a.active {
+                    color: var(--caramel);
+                    font-weight: 500;
+                    border-left-color: var(--caramel);
+                    background: rgba(181,117,42,0.05);
+                }
+
+        /* Logout row */
+        .dash-logout {
+            border-top: 1px solid var(--border);
+            padding: 6px 0;
+        }
+
+            .dash-logout form {
+                margin: 0;
+            }
+
+            .dash-logout button {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 16px;
+                width: 100%;
+                background: none;
+                border: none;
+                border-left: 2px solid transparent;
+                color: var(--muted);
+                font-size: 13px;
+                font-family: 'DM Sans', sans-serif;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+
+                .dash-logout button i {
+                    width: 15px;
+                    font-size: 12px;
+                    text-align: center;
+                }
+
+                .dash-logout button:hover {
+                    color: #c0392b;
+                    background: rgba(192,57,43,0.04);
+                    border-left-color: rgba(192,57,43,0.25);
+                }
+
+        /* ── Main content ── */
+        .dash-main {
+            min-width: 0;
+        }
+
+        /* ══════════════════════════════════════
+                   SHARED COMPONENTS  (child views use these)
+                ══════════════════════════════════════ */
+        .ud-page-header {
+            margin-bottom: 22px;
+        }
+
+        .ud-eyebrow {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--caramel);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .ud-eyebrow::before {
+                content: '';
+                display: block;
+                width: 16px;
+                height: 1px;
+                background: var(--caramel);
+            }
+
+        .ud-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--espresso);
+            line-height: 1.15;
+        }
+
+            .ud-title em {
+                font-style: italic;
+                color: var(--caramel);
+            }
+
+        .ud-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .ud-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ud-panel-title-grp {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .ud-panel-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid rgba(181,117,42,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--caramel);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .ud-panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        .ud-panel-body {
+            padding: 20px;
+        }
+
+        .ud-panel-body-flush {
+            padding: 0;
+        }
+
+        .ud-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .ud-table thead th {
+                background: var(--foam);
+                padding: 10px 16px;
+                font-size: 9px;
+                font-weight: 500;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--muted);
+                border-bottom: 1px solid var(--border);
+                text-align: left;
+            }
+
+            .ud-table tbody td {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba(181,117,42,0.06);
+                color: var(--espresso);
+                font-size: 13px;
+                vertical-align: middle;
+            }
+
+            .ud-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .ud-table tbody tr:hover td {
+                background: var(--foam);
+            }
+
+        .s-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 2px;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+            .s-badge::before {
+                content: '';
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: currentColor;
+                opacity: 0.7;
+            }
+
+            .s-badge.completed, .s-badge.delivered, .s-badge.approved {
+                background: rgba(46,125,50,0.08);
+                color: #2e7d32;
+                border: 1px solid rgba(46,125,50,0.2);
+            }
+
+            .s-badge.pending {
+                background: rgba(181,117,42,0.08);
+                color: var(--caramel);
+                border: 1px solid rgba(181,117,42,0.22);
+            }
+
+            .s-badge.processing {
+                background: rgba(41,98,255,0.07);
+                color: #2962ff;
+                border: 1px solid rgba(41,98,255,0.15);
+            }
+
+            .s-badge.shipped {
+                background: rgba(0,137,123,0.07);
+                color: #00897b;
+                border: 1px solid rgba(0,137,123,0.15);
+            }
+
+            .s-badge.cancelled, .s-badge.failed {
+                background: rgba(192,57,43,0.07);
+                color: #c0392b;
+                border: 1px solid rgba(192,57,43,0.15);
+            }
+
+            .s-badge.verified {
+                background: rgba(46,125,50,0.08);
+                color: #2e7d32;
+                border: 1px solid rgba(46,125,50,0.2);
+            }
+
+            .s-badge.unverified {
+                background: rgba(181,117,42,0.08);
+                color: var(--caramel);
+                border: 1px solid rgba(181,117,42,0.22);
+            }
+
+        .u-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 2px;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.18s;
+        }
+
+        .u-btn-primary {
+            background: var(--espresso);
+            color: var(--cream);
+        }
+
+            .u-btn-primary:hover {
+                background: var(--caramel);
+                color: white;
+            }
+
+        .u-btn-outline {
+            background: transparent;
+            border: 1.5px solid rgba(181,117,42,0.3);
+            color: var(--caramel);
+        }
+
+            .u-btn-outline:hover {
+                background: var(--caramel);
+                color: white;
+                border-color: var(--caramel);
+            }
+
+        .u-btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(181,117,42,0.2);
+            color: var(--caramel);
+        }
+
+            .u-btn-ghost:hover {
+                background: var(--caramel);
+                color: white;
+            }
+
+        .u-btn-danger {
+            background: transparent;
+            border: 1px solid rgba(192,57,43,0.2);
+            color: #c0392b;
+        }
+
+            .u-btn-danger:hover {
+                background: #c0392b;
+                color: white;
+                border-color: #c0392b;
+            }
+
+        .u-btn-sm {
+            padding: 5px 12px;
+            font-size: 10px;
+        }
+
+        .u-input {
+            width: 100%;
+            background: var(--foam);
+            border: 1px solid rgba(181,117,42,0.18);
+            border-radius: 2px;
+            padding: 10px 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--espresso);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+            .u-input:focus {
+                border-color: var(--caramel);
+                box-shadow: 0 0 0 3px rgba(181,117,42,0.08);
+            }
+
+        .u-label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .u-form-group {
+            margin-bottom: 16px;
+        }
+
+        .u-validation {
+            font-size: 11px;
+            color: #c0392b;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .u-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 11px 14px;
+            border-radius: 2px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+            .u-alert.success {
+                background: rgba(46,125,50,0.07);
+                border: 1px solid rgba(46,125,50,0.2);
+                color: #2e7d32;
+            }
+
+            .u-alert.error {
+                background: rgba(192,57,43,0.07);
+                border: 1px solid rgba(192,57,43,0.2);
+                color: #c0392b;
+            }
+
+            .u-alert.info {
+                background: rgba(181,117,42,0.07);
+                border: 1px solid rgba(181,117,42,0.2);
+                color: var(--caramel);
+            }
+
+        .u-empty {
+            padding: 48px 24px;
+            text-align: center;
+        }
+
+            .u-empty i {
+                font-size: 36px;
+                color: rgba(181,117,42,0.18);
+                display: block;
+                margin-bottom: 12px;
+            }
+
+            .u-empty p {
+                font-size: 14px;
+                color: var(--muted);
+                font-style: italic;
+                margin-bottom: 16px;
+            }
+
+        .modal-content {
+            border: none;
+            border-radius: 3px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+            padding: 12px 20px;
+            gap: 8px;
+        }
+
+        .dash-footer {
+            text-align: center;
+            padding: 18px;
+            color: var(--muted);
+            font-size: 11px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    @* ═══ NAVBAR — same structure and CSS as _Layout ═══ *@
+    <nav class="site-nav">
+        <div class="nav-inner">
+
+            <a asp-controller="Home" asp-action="Index" class="nav-brand">
+                <img src="~/images/coffee-icon-sign-symbol-design-free-png.webp" alt="Coffee Shop">
+                <span class="nav-brand-name">Coffee Shop</span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a asp-controller="Products" asp-action="Shop">Shop</a></li>
+                <li><a asp-controller="Products" asp-action="Contact">Contact</a></li>
+                <li>
+                    <a asp-controller="UserDashboard" asp-action="Index" class="active">
+                        <i class="fas fa-user" style="font-size:11px;margin-right:4px;opacity:0.75;"></i>My Account
+                    </a>
+                </li>
+
+                @* _LoginPartial renders <ul class="navbar-nav"> with a user-icon dropdown.
+               CSS above overrides Bootstrap so it sits inline in the nav row.
+               When logged in: shows Logout. When logged out: shows Register / Login. *@
+                <partial name="_LoginPartial" />
+
+                <li>
+                    <a asp-controller="ShoppingCart" asp-action="Index" class="nav-cart-link">
+                        <i class="fas fa-shopping-bag" style="font-size:12px;"></i>
+                        Cart
+                        @if (cartCount > 0)
+                        {
+                            <span class="cart-badge">@cartCount</span>
+                        }
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    @* ═══ DASHBOARD: sidebar panel + main content ═══ *@
+    <div class="dash-page">
+        <div class="dash-body">
+
+            @* ── Sidebar ── *@
+            <aside class="dash-sidebar">
+
+                <div class="dash-profile">
+                    <div class="dash-avatar">@userInitial</div>
+                    <div class="dash-username">@User.Identity.Name</div>
+                    <div class="dash-useremail">@userEmail</div>
+                </div>
+
+                <nav class="dash-nav">
+                    <a href="/UserDashboard/Index"
+                       class="@(action == "Index" ? "active" : "")">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                    <a href="/UserDashboard/OrderHistory"
+                       class="@(action is "OrderHistory" or "OrderDetails" ? "active" : "")">
+                        <i class="fas fa-receipt"></i> My Orders
+                    </a>
+                    <a href="/UserDashboard/Wishlist"
+                       class="@(action == "Wishlist" ? "active" : "")">
+                        <i class="fas fa-heart"></i> My Wishlist
+                    </a>
+                    <a href="/UserDashboard/Addresses"
+                       class="@(action == "Addresses" ? "active" : "")">
+                        <i class="fas fa-map-marker-alt"></i> My Addresses
+                    </a>
+                    <a href="/UserDashboard/MyReviews"
+                       class="@(action is "MyReviews" or "EditReview" ? "active" : "")">
+                        <i class="fas fa-star"></i> My Reviews
+                    </a>
+                    <a href="/UserDashboard/Profile"
+                       class="@(action == "Profile" ? "active" : "")">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                </nav>
+
+                <div class="dash-logout">
+                    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                        <button type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+
+            </aside>
+
+            @* ── Main content ── *@
+            <main class="dash-main">
+                @RenderBody()
+            </main>
+
+        </div>
+
+        <footer class="dash-footer">
+            &copy; @DateTime.Now.Year Coffee Shop, Kumanovo. All rights reserved.
+        </footer>
+    </div>
+
+    <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('navToggle').addEventListener('click', function () {
+            document.getElementById('navLinks').classList.toggle('open');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", false)
+</body>
+</html>
