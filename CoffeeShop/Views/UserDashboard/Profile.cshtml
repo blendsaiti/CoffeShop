@@ -4,12 +4,64 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
+<style>
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(181,117,42,0.06);
+        gap: 12px;
+    }
+
+    .info-row-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        text-align: right;
+    }
+
+        .info-row-value span:first-child {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--espresso);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    @@media (max-width: 700px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .info-row-value {
+            text-align: left;
+        }
+    }
+</style>
+
 <div class="ud-page-header">
     <div class="ud-eyebrow">Account</div>
     <h1 class="ud-title">My <em>Profile</em></h1>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">
+<div class="profile-grid">
 
     <!-- Profile Info -->
     <div class="ud-panel">
