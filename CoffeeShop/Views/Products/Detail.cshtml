@@ -451,8 +451,9 @@
         }
 
     .btn-write-review {
-        display: inline-flex;
-        align-items: center;
+        display: flex;
+    justify-content: center;
+    align-items: center;
         gap: 10px;
         background: var(--espresso);
         color: var(--cream);
@@ -563,9 +564,9 @@
     }
 
         .reviews-empty i {
-            font-size: 48px;
+            font-size: 24px;
             color: rgba(181,117,42,0.2);
-            margin-bottom: 18px;
+            
             display: block;
         }
 
@@ -625,6 +626,94 @@
         .review-comment {
             padding-left: 0;
             margin-top: 12px;
+        }
+    }
+
+    @@media (max-width: 991px) {
+        .detail-info-panel {
+            padding-left: 0;
+            margin-top: 40px;
+        }
+
+        .detail-image-panel {
+            position: static;
+        }
+        .detail-image-frame {
+            height: 360px;
+        }
+
+        .reviews-title {
+            font-size: 28px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .detail-section {
+            padding: 48px 0 60px;
+        }
+
+        .reviews-section {
+            padding: 48px 0 60px;
+        }
+        .detail-image-frame {
+            height: 280px;
+        }
+        .reviews-header {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+        .review-comment {
+            padding-left: 0;
+            margin-top: 10px;
+        }
+        .review-card {
+            padding: 20px;
+        }
+
+        .review-top {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .review-date {
+            width: 100%;
+            padding-left: 56px; 
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .detail-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-add-cart, .btn-continue, .cart-btn {
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+        }
+
+        .detail-image-frame {
+            height: 240px;
+        }
+        
+        .detail-price {
+            font-size: 32px;
+        }
+
+        .review-comment {
+            padding-left: 0;
+            margin-top: 12px;
+        }
+
+        .review-date {
+            padding-left: 0;
+        }
+
+        .review-top {
+            flex-direction: column;
+            gap: 10px;
         }
     }
 </style>

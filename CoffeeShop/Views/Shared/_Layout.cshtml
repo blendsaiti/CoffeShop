@@ -255,6 +255,10 @@
             }
 
         @@media (max-width: 900px) {
+            .nav-inner {
+                padding: 0 20px;
+            }
+
             .nav-toggle {
                 display: block;
             }
@@ -262,14 +266,14 @@
             #navLinks {
                 display: none !important;
                 flex-direction: column !important;
-                align-items: flex-start !important;
+                align-items: stretch !important;
                 position: absolute;
                 top: 68px;
                 left: 0;
                 right: 0;
                 background: var(--foam);
                 border-bottom: 1px solid var(--border);
-                padding: 12px 20px 16px;
+                padding: 8px 20px 16px;
                 box-shadow: 0 8px 24px rgba(28,15,8,0.08);
                 gap: 0 !important;
             }
@@ -277,16 +281,69 @@
                 #navLinks.open {
                     display: flex !important;
                 }
-
-            .nav-links > li, .nav-links .navbar-nav {
+            /* All top-level items full width */
+            .nav-links > li,
+            .nav-links .navbar-nav {
                 width: 100%;
             }
 
                 .nav-links > li > a {
-                    padding: 11px 0;
+                    padding: 12px 0;
                     border-bottom: 1px solid rgba(181,117,42,0.08) !important;
                     width: 100%;
+                    display: block;
                 }
+            /* _LoginPartial: flatten the navbar-nav into column */
+            .nav-links .navbar-nav {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+
+                .nav-links .navbar-nav .nav-link {
+                    padding: 12px 0 !important;
+                    border-bottom: 1px solid rgba(181,117,42,0.08) !important;
+                    border-bottom-color: rgba(181,117,42,0.08) !important;
+                    width: 100%;
+                }
+            /* Dropdown menu: show inline, not floating */
+            .nav-links .dropdown-menu {
+                position: static !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+                padding: 0 0 4px 16px !important;
+                margin: 0 !important;
+            }
+
+            .nav-links .dropdown-item {
+                padding: 9px 0 !important;
+                border-bottom: 1px solid rgba(181,117,42,0.06) !important;
+            }
+            /* Cart link: full width, centered */
+            .nav-cart-link {
+                width: 100%;
+                justify-content: center;
+                border-radius: 2px;
+                margin-top: 8px;
+                padding: 12px !important;
+            }
+            /* Login button: full width */
+            .nav-login-btn {
+                width: 100%;
+                justify-content: center;
+                margin: 4px 0 !important;
+                padding: 11px 0 !important;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .nav-brand-name {
+                font-size: 17px;
+            }
+
+            .nav-inner {
+                padding: 0 16px;
+            }
         }
 
         .body-offset {
@@ -370,8 +427,37 @@
 
     <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('navToggle').addEventListener('click', function () {
-            document.getElementById('navLinks').classList.toggle('open');
+        const navToggle = document.getElementById('navToggle');
+        const navLinks  = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', function () {
+            const isOpen = navLinks.classList.toggle('open');
+            const spans = navToggle.querySelectorAll('span');
+            if (isOpen) {
+                spans[0].style.cssText = 'transform:translateY(7px) rotate(45deg)';
+                spans[1].style.cssText = 'opacity:0';
+                spans[2].style.cssText = 'transform:translateY(-7px) rotate(-45deg)';
+            } else {
+                spans[0].style.cssText = '';
+                spans[1].style.cssText = '';
+                spans[2].style.cssText = '';
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                navLinks.classList.remove('open');
+                navToggle.querySelectorAll('span').forEach(s => s.style.cssText = '');
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) {
+                    navLinks.classList.remove('open');
+                    navToggle.querySelectorAll('span').forEach(s => s.style.cssText = '');
+                }
+            });
         });
     </script>
     @await RenderSectionAsync("Scripts", false)
